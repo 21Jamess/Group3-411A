@@ -1,5 +1,6 @@
 package com.example.realtodo
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,4 +37,11 @@ class TaskAdapter(private val tasks: MutableList<Task>) :
     }
 
     override fun getItemCount() = tasks.size
+
+    // Method to add a new task
+    fun addTask(task: Task) {
+        tasks.add(task)
+        notifyItemInserted(tasks.size - 1)
+        Log.d(TAG, "Task Added: ${task.title}")
+    }
 }
