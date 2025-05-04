@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -66,5 +67,35 @@ class MainActivity : AppCompatActivity() {
         taskAdapter.notifyDataSetChanged()
 
         Log.d(TAG, "Added sample tasks")
+    }
+
+    private fun setupAddTaskButton() {
+        buttonAddTask.setOnClickListener {
+            addNewTask()
+        }
+    }
+
+    private fun addNewTask() {
+        val taskTitle = editTextTaskTitle.text.toString().trim()
+
+        if (taskTitle.isEmpty()) {
+            Toast.makeText(this, "Please enter a task", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Create a new task and add it to the adapter
+        val newTask = Task(
+            id = System.currentTimeMillis(), // Use timestamp as a simple ID
+            title = taskTitle
+        )
+
+        taskAdapter.addTask(newTask)
+
+        // Clear the input field
+        editTextTaskTitle.text.clear()
+
+        // Log the event
+        Log.i(TAG, "Task Added: $taskTitle")
+        Toast.makeText(this, "Task Added", Toast.LENGTH_SHORT).show()
     }
 }
