@@ -15,11 +15,32 @@ class TaskAdapter(private val tasks: MutableList<Task>) :
 
     private val TAG = "TaskAdapter"
 
+    // Interface for click listeners
+    interface TaskItemListener {
+        fun onTaskCompleteClicked(position: Int)
+    }
+
+    private var listener: TaskItemListener? = null
+
+    fun setTaskItemListener(listener: TaskItemListener) {
+        this.listener = listener
+    }
+
     // ViewHolder class for task items
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val titleTextView: TextView = itemView.findViewById(R.id.textViewTaskTitle)
         val completeCheckBox: CheckBox = itemView.findViewById(R.id.checkboxTaskCompleted)
         val deleteButton: ImageButton = itemView.findViewById(R.id.imageButtonDeleteTask)
+
+        init {
+            // Set up click listeners
+            completeCheckBox.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    listener?.onTaskCompleteClicked(position)
+                }
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
@@ -38,10 +59,18 @@ class TaskAdapter(private val tasks: MutableList<Task>) :
 
     override fun getItemCount() = tasks.size
 
-    // Method to add a new task
+    // Methods to modify the task list
     fun addTask(task: Task) {
         tasks.add(task)
         notifyItemInserted(tasks.size - 1)
         Log.d(TAG, "Task Added: ${task.title}")
+    }
+
+    fun completeTask(position: Int) {
+        if (position in 0 until tasks.size) {
+            tasks[position].isCompleted = !tasks[position].isCompleted
+            notifyItemChanged(position)
+            Log.d(TAG, "Task Completed: ${tasks[position].title}")
+        }
     }
 }

@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.finaltodo.R
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), TaskAdapter.TaskItemListener {
 
     private val TAG = "MainActivity"
     private lateinit var taskAdapter: TaskAdapter
@@ -42,12 +42,16 @@ class MainActivity : AppCompatActivity() {
         // Set up RecyclerView
         setupRecyclerView()
 
+        // Set up add task button
+        setupAddTaskButton()
+
         // Log app startup
         Log.i(TAG, "Todo List App Started")
     }
 
     private fun setupRecyclerView() {
         taskAdapter = TaskAdapter(taskList)
+        taskAdapter.setTaskItemListener(this)
 
         recyclerViewTasks.apply {
             adapter = taskAdapter
@@ -97,5 +101,22 @@ class MainActivity : AppCompatActivity() {
         // Log the event
         Log.i(TAG, "Task Added: $taskTitle")
         Toast.makeText(this, "Task Added", Toast.LENGTH_SHORT).show()
+    }
+
+    // TaskAdapter.TaskItemListener implementations
+    override fun onTaskCompleteClicked(position: Int) {
+        taskAdapter.completeTask(position)
+
+        // Get the task that was completed
+        val task = taskList[position]
+        val status = if (task.isCompleted) "completed" else "uncompleted"
+
+        // Log the event
+        Log.i(TAG, "Task $status: ${task.title}")
+        Toast.makeText(
+            this,
+            "Task ${if (task.isCompleted) "completed" else "uncompleted"}",
+            Toast.LENGTH_SHORT
+        ).show()
     }
 }
