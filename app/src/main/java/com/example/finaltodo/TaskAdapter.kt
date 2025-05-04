@@ -1,4 +1,4 @@
-package com.example.realtodo
+package com.example.finaltodo
 
 import android.util.Log
 import android.view.LayoutInflater
@@ -30,6 +30,7 @@ class TaskAdapter(private val tasks: MutableList<Task>) :
     // ViewHolder class for task items
     inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val titleTextView: TextView = itemView.findViewById(R.id.textViewTaskTitle)
+        val dueDateTextView: TextView = itemView.findViewById(R.id.textViewDueDate)
         val completeCheckBox: CheckBox = itemView.findViewById(R.id.checkboxTaskCompleted)
         val deleteButton: ImageButton = itemView.findViewById(R.id.imageButtonDeleteTask)
 
@@ -63,6 +64,15 @@ class TaskAdapter(private val tasks: MutableList<Task>) :
         // Bind data to views
         holder.titleTextView.text = currentTask.title
         holder.completeCheckBox.isChecked = currentTask.isCompleted
+
+        // Format and display the due date if available
+        if (currentTask.dueDate != null) {
+            val dateFormat = java.text.SimpleDateFormat("MMM dd, yyyy - HH:mm:ss", java.util.Locale.getDefault())
+            holder.dueDateTextView.text = "Due: ${dateFormat.format(currentTask.dueDate)}"
+            holder.dueDateTextView.visibility = View.VISIBLE
+        } else {
+            holder.dueDateTextView.visibility = View.GONE
+        }
     }
 
     override fun getItemCount() = tasks.size
