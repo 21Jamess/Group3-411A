@@ -119,4 +119,14 @@ class MainActivity : AppCompatActivity(), TaskAdapter.TaskItemListener {
             Toast.LENGTH_SHORT
         ).show()
     }
+
+    override fun onTaskDeleteClicked(position: Int) {
+        // Log before deleting to keep the reference
+        val taskToDelete = taskList[position]
+        Log.i(TAG, "Task Deleted: ${taskToDelete.title}")
+
+        taskAdapter.deleteTask(position)
+
+        Toast.makeText(this, "Task Deleted", Toast.LENGTH_SHORT).show()
+    }
 }

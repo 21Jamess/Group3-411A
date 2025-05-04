@@ -18,6 +18,7 @@ class TaskAdapter(private val tasks: MutableList<Task>) :
     // Interface for click listeners
     interface TaskItemListener {
         fun onTaskCompleteClicked(position: Int)
+        fun onTaskDeleteClicked(position: Int)
     }
 
     private var listener: TaskItemListener? = null
@@ -38,6 +39,13 @@ class TaskAdapter(private val tasks: MutableList<Task>) :
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
                     listener?.onTaskCompleteClicked(position)
+                }
+            }
+
+            deleteButton.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    listener?.onTaskDeleteClicked(position)
                 }
             }
         }
@@ -71,6 +79,16 @@ class TaskAdapter(private val tasks: MutableList<Task>) :
             tasks[position].isCompleted = !tasks[position].isCompleted
             notifyItemChanged(position)
             Log.d(TAG, "Task Completed: ${tasks[position].title}")
+        }
+    }
+
+    fun deleteTask(position: Int) {
+        if (position in 0 until tasks.size) {
+            val deletedTask = tasks[position]
+            tasks.removeAt(position)
+            notifyItemRemoved(position)
+            notifyItemRangeChanged(position, tasks.size)
+            Log.d(TAG, "Task Deleted: ${deletedTask.title}")
         }
     }
 }
