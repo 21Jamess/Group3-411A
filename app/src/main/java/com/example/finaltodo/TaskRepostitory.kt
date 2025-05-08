@@ -22,7 +22,7 @@ class TaskRepostitory(context: Context) {
             arrayOf(TaskDataHelper.COLUMN_TASK),
             null, null, null, null, null
         )
-        val tasks = mutableListof<String>()
+        val tasks = mutableListOf<String>()
         with(cursor) {
             while (moveToNext()) {
                 val tasks = getString(getColumnIndexOrThrow(TaskDataHelper.COLUMN_TASK))

@@ -9,10 +9,14 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.TextView
+import androidx.activity.viewModels
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SwitchCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.finaltodo.databinding.ActivityMainBinding
@@ -23,6 +27,7 @@ import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private lateinit var settingsDataStore: SettingsDataStore
     private lateinit var prefs: SharedPreferences
     private var tasks = mutableListOf<Task>()
     private lateinit var adapter: TaskAdapter
@@ -47,6 +52,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
 
+        settingsDataStore = SettingsDataStore(this)
         setupThemeSwitch()
         setupRecyclerView()
         setupFab()
@@ -59,13 +65,19 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupThemeSwitch() {
         val themeSwitch = binding.toolbar.findViewById<SwitchCompat>(R.id.themeSwitch)
-        themeSwitch.isChecked = prefs.getBoolean("dark_mode", false)
+        lifecycleScope.launch {
+            settingsDataStore.darkModeFlow.collect { isDarkMode ->
+                themeSwitch.isChecked = isDarkMode
+                AppCompatDelegate.setDefaultNightMode(
+                    if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES
+                    else AppCompatDelegate.MODE_NIGHT_NO
+                )
+            }
+        }
         themeSwitch.setOnCheckedChangeListener { _, isChecked ->
-            prefs.edit().putBoolean("dark_mode", isChecked).apply()
-            AppCompatDelegate.setDefaultNightMode(
-                if (isChecked) AppCompatDelegate.MODE_NIGHT_YES
-                else AppCompatDelegate.MODE_NIGHT_NO
-            )
+            lifecycleScope.launch {
+                settingsDataStore.saveDarkModeSetting(isChecked)
+            }
         }
     }
 
