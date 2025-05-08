@@ -17,11 +17,11 @@ class TaskDataHelper (context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         val createTable = "Create Table $TABLE_NAME (" +
                 "$COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "$COLUMN_TASK TEXT)"
-        db.execSQL(createTable)
+        db?.execSQL(createTable)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_NAME")
+        db?.execSQL("DROP TABLE IF EXISTS $TABLE_NAME")
         onCreate(db)
     }
 }
