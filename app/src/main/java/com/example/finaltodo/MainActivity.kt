@@ -2,216 +2,215 @@ package com.example.finaltodo
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Button
-import android.widget.DatePicker
-import android.widget.EditText
-import android.widget.TimePicker
-import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
+import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.SwitchCompat
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.finaltodo.R
+import com.example.finaltodo.databinding.ActivityMainBinding
+import com.google.android.material.textfield.TextInputEditText
+import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
+import java.util.Locale
 
-class MainActivity : AppCompatActivity(), TaskAdapter.TaskItemListener {
+class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var prefs: SharedPreferences
+    private var tasks = mutableListOf<Task>()
+    private lateinit var adapter: TaskAdapter
 
-    private val TAG = "MainActivity"
-    private lateinit var taskAdapter: TaskAdapter
-    private lateinit var recyclerViewTasks: RecyclerView
-    private lateinit var editTextTaskTitle: EditText
-    private lateinit var buttonAddTask: Button
-    private lateinit var buttonSelectDateTime: Button
-
-    // Sample task list (in a real app, this would come from a database)
-    private val taskList = mutableListOf<Task>()
-
-    // Calendar for date/time selection
-    private val calendar = Calendar.getInstance()
-    private var selectedDueDate: Date? = null
+    companion object {
+        private const val KEY_TASKS = "key_tasks"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+        // restore tasks
+        savedInstanceState?.getSerializable(KEY_TASKS)?.let {
+            @Suppress("UNCHECKED_CAST")
+            tasks = (it as ArrayList<Task>).toMutableList()
         }
 
-        // Initialize views
-        recyclerViewTasks = findViewById(R.id.recyclerViewTasks)
-        editTextTaskTitle = findViewById(R.id.editTextTaskTitle)
-        buttonAddTask = findViewById(R.id.buttonAddTask)
-        buttonSelectDateTime = findViewById(R.id.buttonSelectDateTime)
+        // theme
+        prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        applyTheme()
 
-        // Set up RecyclerView
+        super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
+
+        setupThemeSwitch()
         setupRecyclerView()
+        setupFab()
+    }
 
-        // Set up add task button
-        setupAddTaskButton()
+    override fun onSaveInstanceState(out: Bundle) {
+        super.onSaveInstanceState(out)
+        out.putSerializable(KEY_TASKS, ArrayList(tasks))
+    }
 
-        // Set up date/time selector button
-        setupDateTimeButton()
-
-        // Log app startup
-        Log.i(TAG, "Todo List App Started")
+    private fun setupThemeSwitch() {
+        val themeSwitch = binding.toolbar.findViewById<SwitchCompat>(R.id.themeSwitch)
+        themeSwitch.isChecked = prefs.getBoolean("dark_mode", false)
+        themeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            prefs.edit().putBoolean("dark_mode", isChecked).apply()
+            AppCompatDelegate.setDefaultNightMode(
+                if (isChecked) AppCompatDelegate.MODE_NIGHT_YES
+                else AppCompatDelegate.MODE_NIGHT_NO
+            )
+        }
     }
 
     private fun setupRecyclerView() {
-        taskAdapter = TaskAdapter(taskList)
-        taskAdapter.setTaskItemListener(this)
-
-        recyclerViewTasks.apply {
-            adapter = taskAdapter
-            layoutManager = LinearLayoutManager(this@MainActivity)
-        }
-
-        // Add some sample tasks for testing
-        addSampleTasks()
-    }
-
-    private fun addSampleTasks() {
-        // Add a few sample tasks to see how the list works
-        val calendar = java.util.Calendar.getInstance()
-
-        // Task 1: Due today
-        taskList.add(Task(1, "Buy groceries", dueDate = calendar.time))
-
-        // Task 2: Due tomorrow
-        calendar.add(java.util.Calendar.DAY_OF_MONTH, 1)
-        taskList.add(Task(2, "Finish homework", dueDate = calendar.time))
-
-        // Task 3: Due in three days
-        calendar.add(java.util.Calendar.DAY_OF_MONTH, 2)
-        taskList.add(Task(3, "Go to gym", dueDate = calendar.time))
-
-        taskAdapter.notifyDataSetChanged()
-
-        Log.d(TAG, "Added sample tasks with due dates")
-    }
-
-    private fun setupAddTaskButton() {
-        buttonAddTask.setOnClickListener {
-            addNewTask()
-        }
-    }
-
-    private fun setupDateTimeButton() {
-        buttonSelectDateTime.setOnClickListener {
-            showDateTimePicker()
-        }
-    }
-
-    private fun showDateTimePicker() {
-        // Get current date values
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val day = calendar.get(Calendar.DAY_OF_MONTH)
-
-        // Show date picker dialog
-        DatePickerDialog(this, { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDay: Int ->
-            // Save the selected date
-            calendar.set(Calendar.YEAR, selectedYear)
-            calendar.set(Calendar.MONTH, selectedMonth)
-            calendar.set(Calendar.DAY_OF_MONTH, selectedDay)
-
-            // Get current time values
-            val hour = calendar.get(Calendar.HOUR_OF_DAY)
-            val minute = calendar.get(Calendar.MINUTE)
-
-            // Show time picker dialog
-            TimePickerDialog(this, { _: TimePicker, selectedHour: Int, selectedMinute: Int ->
-                // Save the selected time
-                calendar.set(Calendar.HOUR_OF_DAY, selectedHour)
-                calendar.set(Calendar.MINUTE, selectedMinute)
-                calendar.set(Calendar.SECOND, 0) // Reset seconds
-
-                // Save the selected date/time
-                selectedDueDate = calendar.time
-
-                // Show confirmation toast
-                val dateFormat = java.text.SimpleDateFormat("MMM dd, yyyy - HH:mm:ss", java.util.Locale.getDefault())
-                Toast.makeText(
-                    this,
-                    "Due date set: ${dateFormat.format(selectedDueDate)}",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-                // Update button text
-                buttonSelectDateTime.text = "Due: ${dateFormat.format(selectedDueDate)}"
-
-                // Log the event
-                Log.d(TAG, "Due date selected: ${dateFormat.format(selectedDueDate)}")
-            }, hour, minute, true).show()
-        }, year, month, day).show()
-    }
-
-    private fun addNewTask() {
-        val taskTitle = editTextTaskTitle.text.toString().trim()
-
-        if (taskTitle.isEmpty()) {
-            Toast.makeText(this, "Please enter a task", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        // Use selected date or default to 24 hours from now
-        val dueDate = selectedDueDate ?: run {
-            val defaultCalendar = Calendar.getInstance()
-            defaultCalendar.add(Calendar.DAY_OF_MONTH, 1)
-            defaultCalendar.time
-        }
-
-        // Create a new task and add it to the adapter
-        val newTask = Task(
-            id = System.currentTimeMillis(), // Use timestamp as a simple ID
-            title = taskTitle,
-            dueDate = dueDate
+        adapter = TaskAdapter(
+            tasks,
+            onDeleteClick = { task ->
+                val idx = tasks.indexOf(task)
+                if (idx != -1) {
+                    tasks.removeAt(idx)
+                    adapter.notifyItemRemoved(idx)
+                }
+            },
+            onEditClick = { task ->
+                showAddEditDialog(task)
+            }
         )
-
-        taskAdapter.addTask(newTask)
-
-        // Clear the input field and reset date selection
-        editTextTaskTitle.text.clear()
-        selectedDueDate = null
-        buttonSelectDateTime.text = "Set Due Date/Time"
-
-        // Log the event
-        val dateFormat = java.text.SimpleDateFormat("MMM dd, yyyy - HH:mm:ss", java.util.Locale.getDefault())
-        Log.i(TAG, "Task Added: $taskTitle with due date: ${dateFormat.format(dueDate)}")
-        Toast.makeText(this, "Task Added with due date", Toast.LENGTH_SHORT).show()
+        binding.recyclerView.apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter = this@MainActivity.adapter
+        }
     }
 
-    // TaskAdapter.TaskItemListener implementations
-    override fun onTaskCompleteClicked(position: Int) {
-        taskAdapter.completeTask(position)
-
-        // Get the task that was completed
-        val task = taskList[position]
-        val status = if (task.isCompleted) "completed" else "uncompleted"
-
-        // Log the event
-        Log.i(TAG, "Task $status: ${task.title}")
-        Toast.makeText(
-            this,
-            "Task ${if (task.isCompleted) "completed" else "uncompleted"}",
-            Toast.LENGTH_SHORT
-        ).show()
+    private fun setupFab() {
+        binding.fabAddTask.setOnClickListener {
+            showAddEditDialog(null)
+        }
     }
 
-    override fun onTaskDeleteClicked(position: Int) {
-        // Log before deleting to keep the reference
-        val taskToDelete = taskList[position]
-        Log.i(TAG, "Task Deleted: ${taskToDelete.title}")
+    private fun showAddEditDialog(task: Task?) {
+        val view = layoutInflater.inflate(R.layout.dialog_add_task, null)
+        val etTitle = view.findViewById<TextInputEditText>(R.id.editTextDialogTitle)
+        val etNote  = view.findViewById<TextInputEditText>(R.id.editTextDialogNote)
+        val tvDate  = view.findViewById<TextView>(R.id.textViewDate)
+        val tvTime  = view.findViewById<TextView>(R.id.textViewTime)
+        val dueCal  = Calendar.getInstance()
 
-        taskAdapter.deleteTask(position)
+        task?.let {
+            etTitle.setText(it.title)
+            etNote.setText(it.description)
+            it.dueDate?.let { date ->
+                dueCal.time = date
+                tvDate.text = SimpleDateFormat("MMM d, yyyy", Locale.getDefault()).format(date)
+                tvTime.text = SimpleDateFormat("h:mm a",    Locale.getDefault()).format(date)
+            }
+        }
 
-        Toast.makeText(this, "Task Deleted", Toast.LENGTH_SHORT).show()
+        view.findViewById<Button>(R.id.buttonPickDate).setOnClickListener {
+            DatePickerDialog(
+                this,
+                { _, y, m, d ->
+                    dueCal.set(y, m, d)
+                    tvDate.text = SimpleDateFormat("MMM d, yyyy", Locale.getDefault()).format(dueCal.time)
+                },
+                dueCal.get(Calendar.YEAR),
+                dueCal.get(Calendar.MONTH),
+                dueCal.get(Calendar.DAY_OF_MONTH)
+            ).show()
+        }
+
+        view.findViewById<Button>(R.id.buttonPickTime).setOnClickListener {
+            TimePickerDialog(
+                this,
+                { _, h, min ->
+                    dueCal.set(Calendar.HOUR_OF_DAY, h)
+                    dueCal.set(Calendar.MINUTE,      min)
+                    tvTime.text = SimpleDateFormat("h:mm a", Locale.getDefault()).format(dueCal.time)
+                },
+                dueCal.get(Calendar.HOUR_OF_DAY),
+                dueCal.get(Calendar.MINUTE),
+                false
+            ).show()
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle(if (task == null) "Add Task" else "Edit Task")
+            .setView(view)
+            .setPositiveButton(if (task==null) "Add" else "Save") { _, _ ->
+                val title = etTitle.text.toString().trim()
+                val note  = etNote.text.toString().trim()
+                if (title.isEmpty()) return@setPositiveButton
+
+                if (task == null) {
+                    tasks.add(Task(title = title, description = note, completed = false, dueDate = dueCal.time))
+                    adapter.notifyItemInserted(tasks.size-1)
+                } else {
+                    val idx = tasks.indexOf(task)
+                    task.title       = title
+                    task.description = note
+                    task.dueDate     = dueCal.time
+                    adapter.notifyItemChanged(idx)
+                }
+                sortByDate()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun applyTheme() {
+        val dm = prefs.getBoolean("dark_mode", false)
+        AppCompatDelegate.setDefaultNightMode(
+            if (dm) AppCompatDelegate.MODE_NIGHT_YES
+            else AppCompatDelegate.MODE_NIGHT_NO
+        )
+    }
+
+    // ─── Menu & Sort ───────────────────────────────────────────────────────────────
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) =
+        when(item.itemId) {
+            R.id.action_sort -> {
+                showSortDialog()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+
+    private fun showSortDialog() {
+        val options = arrayOf("Date", "Alphabetical", "Priority")
+        AlertDialog.Builder(this)
+            .setTitle("Sort Tasks By")
+            .setItems(options) { _, which ->
+                when(which) {
+                    0 -> sortByDate()
+                    1 -> sortAlphabetically()
+                    2 -> sortByPriority()
+                }
+            }
+            .show()
+    }
+
+    private fun sortByDate() {
+        tasks.sortBy { it.dueDate }
+        adapter.notifyDataSetChanged()
+    }
+    private fun sortAlphabetically() {
+        tasks.sortBy { it.title }
+        adapter.notifyDataSetChanged()
+    }
+    private fun sortByPriority() {
+        tasks.sortBy { it.priority }
+        adapter.notifyDataSetChanged()
     }
 }

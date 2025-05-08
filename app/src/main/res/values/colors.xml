@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <!-- Primary (Blue) -->
+    <color name="primary">#2196F3</color> <!-- Material Blue -->
+    <color name="onPrimary">#FFFFFF</color> <!-- White text -->
+    <color name="primaryContainer">#BBDEFB</color> <!-- Light blue container -->
+    <color name="onPrimaryContainer">#0D47A1</color> <!-- Dark blue text -->
+
+    <!-- Secondary (Complementary Blue) -->
+    <color name="secondary">#03A9F4</color> <!-- Light blue -->
+    <color name="onSecondary">#FFFFFF</color>
+    <color name="secondaryContainer">#B3E5FC</color> <!-- Very light blue -->
+    <color name="onSecondaryContainer">#01579B</color> <!-- Dark blue text -->
+
+    <!-- Surface/Background -->
+    <color name="surface">#FFFFFF</color> <!-- Pure white background -->
+    <color name="surface_variant">#F5F5F5</color> <!-- Light grey -->
+    <color name="onSurface">#212121</color> <!-- Dark text -->
+
+    <!-- Error -->
+    <color name="error">#B00020</color> <!-- Classic red -->
+    <color name="onError">#FFFFFF</color>
 </resources>
