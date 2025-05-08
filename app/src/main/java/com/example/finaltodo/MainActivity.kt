@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
@@ -148,14 +149,19 @@ class MainActivity : AppCompatActivity() {
                 if (title.isEmpty()) return@setPositiveButton
 
                 if (task == null) {
-                    tasks.add(Task(title = title, description = note, completed = false, dueDate = dueCal.time))
+                    val newTask = Task(title = title, description = note, completed = false, dueDate = dueCal.time)
+                    tasks.add(newTask)
                     adapter.notifyItemInserted(tasks.size-1)
+                    // Log task addition
+                    Log.i("FinalTodoApp", "Task Added: $title")
                 } else {
                     val idx = tasks.indexOf(task)
                     task.title       = title
                     task.description = note
                     task.dueDate     = dueCal.time
                     adapter.notifyItemChanged(idx)
+                    // Log task editing
+                    Log.i("FinalTodoApp", "Task Edited: $title")
                 }
                 sortByDate()
             }
