@@ -1,5 +1,6 @@
 package com.example.finaltodo
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.CheckBox
@@ -41,6 +42,9 @@ class TaskAdapter(
             isChecked = task.completed
             setOnCheckedChangeListener { _, checked ->
                 task.completed = checked
+                // Log task completion status change
+                val status = if (checked) "Completed" else "Uncompleted"
+                Log.i("FinalTodoApp", "Task $status: ${task.title}")
             }
         }
 
@@ -60,6 +64,8 @@ class TaskAdapter(
         } ?: ""
 
         holder.deleteButton.setOnClickListener {
+            // Log task deletion
+            Log.w("FinalTodoApp", "Task Deleted: ${task.title}")
             onDeleteClick(task)
         }
 
