@@ -70,6 +70,15 @@
             app:iconTint="?attr/colorOnPrimary"
             android:textColor="?attr/colorOnPrimary"
             app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.SmallComponent"/>
+
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/textViewQuote"
+        android:layout_width="343dp"
+        android:layout_height="77dp"
+        android:text="TextView"
+        app:layout_anchor="@+id/bottom_layout"
+        app:layout_anchorGravity="center" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

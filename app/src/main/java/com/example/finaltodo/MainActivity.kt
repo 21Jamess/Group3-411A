@@ -16,8 +16,10 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SwitchCompat
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.finaltodo.api.QuoteExecutor
 import com.example.finaltodo.databinding.ActivityMainBinding
 import com.google.android.material.textfield.TextInputEditText
+import org.w3c.dom.Text
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -26,6 +28,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var prefs: SharedPreferences
     private var tasks = mutableListOf<Task>()
     private lateinit var adapter: TaskAdapter
+
 
     companion object {
         private const val KEY_TASKS = "key_tasks"
@@ -40,6 +43,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
         applyTheme()
@@ -58,6 +62,19 @@ class MainActivity : AppCompatActivity() {
         setupThemeSwitch()
         setupRecyclerView()
         setupFab()
+
+        val textViewQuote = findViewById<TextView>(R.id.textViewQuote)
+
+        val quoteExecutor = QuoteExecutor()
+
+        quoteExecutor.fetchQuote().observe(this) { quote ->
+            if (quote != null) {
+                textViewQuote.text = "\"${quote.q}\"\n- ${quote.a}"
+            }
+            else {
+                textViewQuote.text = "Failed to load quote."
+            }
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
