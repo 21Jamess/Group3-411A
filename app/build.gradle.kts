@@ -43,6 +43,10 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintlayout)
+    // Retrofit
+    implementation("com.google.code.gson:gson:2.8.5")
+    implementation("com.squareup.retrofit2:retrofit:2.5.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.4.0")
 
     // Material Design 3
     implementation("com.google.android.material:material:1.11.0")

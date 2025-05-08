@@ -58,6 +58,12 @@
         android:padding="8dp"
         app:layout_insetEdge="bottom">
 
+        <TextView
+            android:id="@+id/textViewQuote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView" />
+
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/fab_add_task"
             android:layout_width="wrap_content"
@@ -70,6 +76,7 @@
             app:iconTint="?attr/colorOnPrimary"
             android:textColor="?attr/colorOnPrimary"
             app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.SmallComponent"/>
+
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
