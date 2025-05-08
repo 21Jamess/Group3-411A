@@ -1,0 +1,35 @@
+<resources>
+    <!-- App -->
+    <string name="app_name">Final To-Do</string>
+    <string name="change_language">Change Language</string>
+    <string name="toggle_theme">Toggle theme</string>
+
+    <!-- Main screen -->
+    <string name="add_task">Add Task</string>
+    <string name="sort_tasks_by">Sort Tasks By</string>
+    <string name="sort_date">Date</string>
+    <string name="sort_alpha">Alphabetical</string>
+    <string name="sort_priority">Priority</string>
+
+    <!-- Task card -->
+    <string name="delete_task">Delete</string>
+    <string name="overdue">Overdue!</string>
+    <string name="no_due_date">No due date</string>
+    <string name="days_hours_left">%1$dd %2$dh left</string>
+
+    <!-- Add/Edit dialog -->
+    <string name="dialog_title_add">Add Task</string>
+    <string name="dialog_title_edit">Edit Task</string>
+    <string name="hint_title">Task title</string>
+    <string name="hint_notes">Notes (optional)</string>
+    <string name="pick_date">Pick date</string>
+    <string name="no_date_chosen">No date chosen</string>
+    <string name="pick_time">Pick time</string>
+    <string name="no_time_chosen">No time chosen</string>
+    <string name="button_add">Add</string>
+    <string name="button_save">Save</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="search">Search</string>
+    <string name="sort">Sort</string>
+
+</resources>

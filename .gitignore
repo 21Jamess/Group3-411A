@@ -1,0 +1,56 @@
+# Gradle & Android Studio
+.gradle/
+build/
+**/build/                   # Catch module builds too
+/captures/                  # Android Studio screen captures
+.externalNativeBuild/
+.cxx/
+
+# IDE & project files
+*.iml
+*.hprof
+.idea/
+   /caches
+   /libraries
+   /modules.xml
+   /workspace.xml
+   /navEditor.xml
+   /assetWizardSettings.xml
+
+# Local configs
+local.properties
+
+# macOS & Windows
+.DS_Store
+Thumbs.db
+
+# Android generated
+*.apk
+*.ap_
+*.dex
+*.class
+gen/
+
+# Native & NDK
+*.so
+
+# Signing keys
+*.jks
+*.keystore
+
+# Logs and reports
+*.log
+lint/intermediates/
+lint/generated/
+
+# Firebase / Google services
+/google-services.json
+/google-services.xml
+/crashlytics-build.properties
+
+# Kotlin
+*.kotlin_module
+
+# Misc
+out/
+*.orig

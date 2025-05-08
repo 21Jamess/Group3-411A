@@ -1,0 +1,36 @@
+<resources>
+    <!-- App -->
+    <string name="app_name">Danh sách Công việc</string>
+    <string name="change_language">Thay đổi ngôn ngữ</string>
+    <string name="toggle_theme">Chuyển chủ đề</string>
+
+    <!-- Main screen -->
+    <string name="add_task">Thêm Công việc</string>
+    <string name="sort_tasks_by">Sắp xếp theo</string>
+    <string name="sort_date">Ngày</string>
+    <string name="sort_alpha">Theo chữ cái</string>
+    <string name="sort_priority">Ưu tiên</string>
+
+    <!-- Task card -->
+    <string name="delete_task">Xóa</string>
+    <string name="overdue">Quá hạn!</string>
+    <string name="no_due_date">Chưa có ngày</string>
+    <string name="days_hours_left">%1$dd %2$dh còn lại</string>
+
+    <!-- Add/Edit dialog -->
+    <string name="dialog_title_add">Thêm Công việc</string>
+    <string name="dialog_title_edit">Chỉnh sửa Công việc</string>
+    <string name="hint_title">Tiêu đề công việc</string>
+    <string name="hint_notes">Ghi chú (không bắt buộc)</string>
+    <string name="pick_date">Chọn ngày</string>
+    <string name="no_date_chosen">Chưa chọn ngày</string>
+    <string name="pick_time">Chọn giờ</string>
+    <string name="no_time_chosen">Chưa chọn giờ</string>
+    <string name="button_add">Thêm</string>
+    <string name="button_save">Lưu</string>
+    <string name="button_cancel">Hủy</string>
+    <!-- in res/values-vi/strings.xml -->
+    <string name="search">Tìm kiếm</string>
+    <string name="sort">Sắp xếp</string>
+
+</resources>
