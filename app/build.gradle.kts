@@ -56,6 +56,7 @@ dependencies {
 
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.preference:preference-ktx:1.2.1")
+    implementation("androidx.lifecycle:lifecycle-extensions:2.0.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
