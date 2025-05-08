@@ -1,0 +1,37 @@
+<resources>
+    <!-- App -->
+    <string name="app_name">Lista de Tareas</string>
+    <string name="change_language">Cambiar idioma</string>
+    <string name="toggle_theme">Cambiar tema</string>
+
+    <!-- Main screen -->
+    <string name="add_task">Agregar Tarea</string>
+    <string name="sort_tasks_by">Ordenar tareas por</string>
+    <string name="sort_date">Fecha</string>
+    <string name="sort_alpha">Alfabético</string>
+    <string name="sort_priority">Prioridad</string>
+
+    <!-- Task card -->
+    <string name="delete_task">Eliminar</string>
+    <string name="overdue">¡Atrasado!</string>
+    <string name="no_due_date">Sin fecha</string>
+    <string name="days_hours_left">%1$dd %2$dh restantes</string>
+
+    <!-- Add/Edit dialog -->
+    <string name="dialog_title_add">Agregar Tarea</string>
+    <string name="dialog_title_edit">Editar Tarea</string>
+    <string name="hint_title">Título de la tarea</string>
+    <string name="hint_notes">Notas (opcionales)</string>
+    <string name="pick_date">Elegir fecha</string>
+    <string name="no_date_chosen">Ninguna fecha</string>
+    <string name="pick_time">Elegir hora</string>
+    <string name="no_time_chosen">Ninguna hora</string>
+    <string name="button_add">Agregar</string>
+    <string name="button_save">Guardar</string>
+    <string name="button_cancel">Cancelar</string>
+
+    <!-- in res/values-es/strings.xml -->
+    <string name="search">Buscar</string>
+    <string name="sort">Ordenar</string>
+
+</resources>
