@@ -14,9 +14,11 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SwitchCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.finaltodo.databinding.ActivityMainBinding
@@ -33,6 +35,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var prefs: SharedPreferences
     private var tasks = mutableListOf<Task>()
     private lateinit var adapter: TaskAdapter
+    private val taskViewModel: TaskViewModel by viewModels {
+        TaskViewModelFactory(TaskRepostitory(this))
+    }
 
     companion object {
         private const val KEY_TASKS = "key_tasks"
@@ -58,6 +63,11 @@ class MainActivity : AppCompatActivity() {
         setupThemeSwitch()
         setupRecyclerView()
         setupFab()
+
+        taskViewModel.tasks.observe(this, Observer { tasks ->
+            adapter.updateTasks(tasks)
+        })
+        taskViewModel.loadTasks()
     }
 
     override fun onSaveInstanceState(out: Bundle) {
@@ -79,13 +89,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         adapter = TaskAdapter(
-            tasks,
+            emptyList(),
             onDeleteClick = { task ->
-                val idx = tasks.indexOf(task)
-                if (idx != -1) {
-                    tasks.removeAt(idx)
-                    adapter.notifyItemRemoved(idx)
-                }
+                taskViewModel.deleteTask(task)
             },
             onEditClick = { task ->
                 showAddEditDialog(task)
@@ -158,20 +164,13 @@ class MainActivity : AppCompatActivity() {
 
                 if (task == null) {
                     val newTask = Task(title = title, description = note, completed = false, dueDate = dueCal.time)
-                    tasks.add(newTask)
-                    adapter.notifyItemInserted(tasks.size-1)
-                    // Log task addition
-                    Log.i("FinalTodoApp", "Task Added: $title")
+                    taskViewModel.addTask(newTask)
                 } else {
-                    val idx = tasks.indexOf(task)
                     task.title       = title
                     task.description = note
                     task.dueDate     = dueCal.time
-                    adapter.notifyItemChanged(idx)
-                    // Log task editing
-                    Log.i("FinalTodoApp", "Task Edited: $title")
+                    taskViewModel.updateTask(task)
                 }
-                sortByDate()
             }
             .setNegativeButton("Cancel", null)
             .show()
