@@ -22,6 +22,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.finaltodo.databinding.ActivityMainBinding
 import com.google.android.material.textfield.TextInputEditText
 import java.text.SimpleDateFormat
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Locale
 
@@ -62,22 +64,16 @@ class MainActivity : AppCompatActivity() {
         super.onSaveInstanceState(out)
         out.putSerializable(KEY_TASKS, ArrayList(tasks))
     }
-
+    // Theme was able to be saved
     private fun setupThemeSwitch() {
         val themeSwitch = binding.toolbar.findViewById<SwitchCompat>(R.id.themeSwitch)
-        lifecycleScope.launch {
-            settingsDataStore.darkModeFlow.collect { isDarkMode ->
-                themeSwitch.isChecked = isDarkMode
-                AppCompatDelegate.setDefaultNightMode(
-                    if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES
-                    else AppCompatDelegate.MODE_NIGHT_NO
-                )
-            }
-        }
+        themeSwitch.isChecked = prefs.getBoolean("dark_mode", false)
         themeSwitch.setOnCheckedChangeListener { _, isChecked ->
-            lifecycleScope.launch {
-                settingsDataStore.saveDarkModeSetting(isChecked)
-            }
+            prefs.edit().putBoolean("dark_mode", isChecked).apply()
+            AppCompatDelegate.setDefaultNightMode(
+                if (isChecked) AppCompatDelegate.MODE_NIGHT_YES
+                else AppCompatDelegate.MODE_NIGHT_NO
+            )
         }
     }
 

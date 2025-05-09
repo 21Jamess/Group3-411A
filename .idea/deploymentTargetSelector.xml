@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="finaltodo.app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-05-09T00:13:45.658103600Z">
+        <DropdownSelection timestamp="2025-05-09T00:46:36.540106100Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\jrice\.android\avd\Pixel_API_28_version_2.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\jrice\.android\avd\Medium_Phone.avd" />
             </handle>
           </Target>
         </DropdownSelection>
