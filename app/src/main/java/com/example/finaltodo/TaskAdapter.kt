@@ -12,7 +12,7 @@ import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 class TaskAdapter(
-    private val tasks: List<Task>,
+    private var tasks: List<Task>,
     private val onDeleteClick: (Task) -> Unit,
     private val onEditClick: (Task) -> Unit
 ) : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
@@ -72,5 +72,10 @@ class TaskAdapter(
         holder.itemView.setOnClickListener {
             onEditClick(task)
         }
+    }
+
+    fun updateTasks(newTasks: List<Task>) {
+        tasks = newTasks
+        notifyDataSetChanged()
     }
 }

@@ -9,6 +9,6 @@ class TaskViewModelFactory(private val repostitory: TaskRepostitory) : ViewModel
             @Suppress("UNCHECKED_CAST")
             return TaskViewModel(repostitory) as T
         }
-        throw IllegalArgumentException("Unkown ViewModel class")
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

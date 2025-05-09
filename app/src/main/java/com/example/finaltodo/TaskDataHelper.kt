@@ -10,13 +10,19 @@ class TaskDataHelper (context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         private const val DATABASE_VERSION = 1
         const val TABLE_NAME = "tasks"
         const val COLUMN_ID = "id"
-        const val COLUMN_TASK = "task"
+        const val COLUMN_TITLE = "title"
+        const val COLUMN_DESCRIPTION = "description"
+        const val COLUMN_COMPLETED = "completed"
+        const val COLUMN_DUE_DATE = "due_date"
         }
 
     override fun onCreate(db: SQLiteDatabase?) {
         val createTable = "Create Table $TABLE_NAME (" +
                 "$COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "$COLUMN_TASK TEXT)"
+                "$COLUMN_TITLE TEXT, " +
+                "$COLUMN_DESCRIPTION TEXT, " +
+                "$COLUMN_COMPLETED INTEGER, " +
+                "$COLUMN_DUE_DATE INTEGER)"
         db?.execSQL(createTable)
     }
 
