@@ -25,7 +25,7 @@ class TaskRepostitory(context: Context) {
         val tasks = mutableListOf<String>()
         with(cursor) {
             while (moveToNext()) {
-                val tasks = getString(getColumnIndexOrThrow(TaskDataHelper.COLUMN_TASK))
+                val task = getString(getColumnIndexOrThrow(TaskDataHelper.COLUMN_TASK))
                 tasks.add(task)
             }
         }
