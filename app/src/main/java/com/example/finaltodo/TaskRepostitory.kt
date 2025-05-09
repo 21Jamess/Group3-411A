@@ -14,6 +14,7 @@ class TaskRepostitory(context: Context) {
             put(TaskDataHelper.COLUMN_TITLE, task.title)
             put(TaskDataHelper.COLUMN_DESCRIPTION, task.description)
             put(TaskDataHelper.COLUMN_COMPLETED, if (task.completed) 1 else 0)
+            put(TaskDataHelper.COLUMN_DUE_DATE, task.dueDate?.time)
         }
         db.insert(TaskDataHelper.TABLE_NAME, null, values)
     }
