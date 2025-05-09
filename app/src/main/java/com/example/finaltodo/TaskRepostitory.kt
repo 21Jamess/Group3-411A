@@ -50,7 +50,7 @@ class TaskRepostitory(context: Context) {
             put(TaskDataHelper.COLUMN_COMPLETED, if (task.completed) 1 else 0)
             put(TaskDataHelper.COLUMN_DUE_DATE, task.dueDate?.time)
         }
-        db.update(TaskDataHelper.TABLE_NAME, values, "${TaskDataHelper.COLUMN_ID} + ?", arrayOf(task.id.toString()))
+        db.update(TaskDataHelper.TABLE_NAME, values, "${TaskDataHelper.COLUMN_ID} = ?", arrayOf(task.id.toString()))
     }
 
     fun deleteTask(task: Task) {
