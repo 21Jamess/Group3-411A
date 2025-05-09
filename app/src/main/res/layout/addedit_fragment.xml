@@ -1,0 +1,64 @@
+package com.example.finaltodo.ui
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import com.example.finaltodo.CounterViewModel
+import com.example.finaltodo.Task
+import com.example.finaltodo.databinding.FragmentAddEditTaskBinding
+
+class addeditfragment : Fragment() {
+
+    private var _binding: FragmentAddEditTaskBinding? = null
+    private val binding get() = _binding!!
+
+    private val counterViewModel: CounterViewModel by activityViewModels()
+    private val args: AddEditTaskFragmentArgs by navArgs()
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentAddEditTaskBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val taskToEdit = args.task
+        if (taskToEdit != null) {
+            binding.editTextTaskTitle.setText(taskToEdit.title)
+            binding.editTextTaskDescription.setText(taskToEdit.description)
+        }
+
+        binding.buttonSave.setOnClickListener {
+            val title = binding.editTextTaskTitle.text.toString()
+            val description = binding.editTextTaskDescription.text.toString()
+
+            if (title.isBlank()) {
+                Toast.makeText(requireContext(), "Title cannot be empty", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (taskToEdit != null) {
+                counterViewModel.updateTask(taskToEdit, title, description)
+            } else {
+                counterViewModel.addTask(Task(title = title, description = description))
+            }
+
+            findNavController().navigateUp()
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+}
