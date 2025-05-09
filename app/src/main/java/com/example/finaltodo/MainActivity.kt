@@ -13,6 +13,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SwitchCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.finaltodo.databinding.ActivityMainBinding
@@ -20,25 +21,29 @@ import com.google.android.material.textfield.TextInputEditText
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import androidx.activity.viewModels
+
+import com.example.finaltodo.CounterViewModel
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private lateinit var settingsDataStore: SettingsDataStore
     private lateinit var prefs: SharedPreferences
     private var tasks = mutableListOf<Task>()
     private lateinit var adapter: TaskAdapter
+
+    private val counterViewModel: CounterViewModel by viewModels()
 
     companion object {
         private const val KEY_TASKS = "key_tasks"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // restore tasks
         savedInstanceState?.getSerializable(KEY_TASKS)?.let {
             @Suppress("UNCHECKED_CAST")
             tasks = (it as ArrayList<Task>).toMutableList()
         }
 
-        // theme
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
         applyTheme()
 
@@ -47,11 +52,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
 
+        settingsDataStore = SettingsDataStore(this)
         setupThemeSwitch()
         setupRecyclerView()
         setupFab()
-        updateTaskCountSubtitle()
-
     }
 
     override fun onSaveInstanceState(out: Bundle) {
@@ -61,13 +65,19 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupThemeSwitch() {
         val themeSwitch = binding.toolbar.findViewById<SwitchCompat>(R.id.themeSwitch)
-        themeSwitch.isChecked = prefs.getBoolean("dark_mode", false)
+        lifecycleScope.launch {
+            settingsDataStore.darkModeFlow.collect { isDarkMode ->
+                themeSwitch.isChecked = isDarkMode
+                AppCompatDelegate.setDefaultNightMode(
+                    if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES
+                    else AppCompatDelegate.MODE_NIGHT_NO
+                )
+            }
+        }
         themeSwitch.setOnCheckedChangeListener { _, isChecked ->
-            prefs.edit().putBoolean("dark_mode", isChecked).apply()
-            AppCompatDelegate.setDefaultNightMode(
-                if (isChecked) AppCompatDelegate.MODE_NIGHT_YES
-                else AppCompatDelegate.MODE_NIGHT_NO
-            )
+            lifecycleScope.launch {
+                settingsDataStore.saveDarkModeSetting(isChecked)
+            }
         }
     }
 
@@ -79,7 +89,6 @@ class MainActivity : AppCompatActivity() {
                 if (idx != -1) {
                     tasks.removeAt(idx)
                     adapter.notifyItemRemoved(idx)
-                    updateTaskCountSubtitle()
                 }
             },
             onEditClick = { task ->
@@ -118,7 +127,7 @@ class MainActivity : AppCompatActivity() {
 
         view.findViewById<Button>(R.id.buttonPickDate).setOnClickListener {
             DatePickerDialog(
-                this
+                this,
                 { _, y, m, d ->
                     dueCal.set(y, m, d)
                     tvDate.text = SimpleDateFormat("MMM d, yyyy", Locale.getDefault()).format(dueCal.time)
@@ -155,7 +164,6 @@ class MainActivity : AppCompatActivity() {
                     val newTask = Task(title = title, description = note, completed = false, dueDate = dueCal.time)
                     tasks.add(newTask)
                     adapter.notifyItemInserted(tasks.size-1)
-                    // Log task addition
                     Log.i("FinalTodoApp", "Task Added: $title")
                 } else {
                     val idx = tasks.indexOf(task)
@@ -163,7 +171,6 @@ class MainActivity : AppCompatActivity() {
                     task.description = note
                     task.dueDate     = dueCal.time
                     adapter.notifyItemChanged(idx)
-                    // Log task editing
                     Log.i("FinalTodoApp", "Task Edited: $title")
                 }
                 sortByDate()
@@ -179,8 +186,6 @@ class MainActivity : AppCompatActivity() {
             else AppCompatDelegate.MODE_NIGHT_NO
         )
     }
-
-    // ─── Menu & Sort ───────────────────────────────────────────────────────────────
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
@@ -222,8 +227,4 @@ class MainActivity : AppCompatActivity() {
         tasks.sortBy { it.priority }
         adapter.notifyDataSetChanged()
     }
-    private fun updateTaskCountSubtitle() {
-        supportActionBar?.subtitle = "Total Tasks: ${tasks.size}"
-    }
-
 }

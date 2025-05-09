@@ -2,103 +2,86 @@ package com.example.finaltodo
 
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
-import android.widget.ImageButton
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.finaltodo.R
+import com.google.android.material.button.MaterialButton
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.concurrent.TimeUnit
 
-class TaskAdapter(private val tasks: MutableList<Task>) :
-    RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
+class TaskAdapter(
+    private val tasks: List<Task>,
+    private val onDeleteClick: (Task) -> Unit,
+    private val onEditClick: (Task) -> Unit
+) : ListAdapter<Task, TaskAdapter.TaskViewHolder>(TaskDiffCallback()) {
 
-    private val TAG = "TaskAdapter"
-
-    // Interface for click listeners
-    interface TaskItemListener {
-        fun onTaskCompleteClicked(position: Int)
-        fun onTaskDeleteClicked(position: Int)
-    }
-
-    private var listener: TaskItemListener? = null
-
-    fun setTaskItemListener(listener: TaskItemListener) {
-        this.listener = listener
-    }
-
-    // ViewHolder class for task items
-    inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val titleTextView: TextView = itemView.findViewById(R.id.textViewTaskTitle)
-        val dueDateTextView: TextView = itemView.findViewById(R.id.textViewDueDate)
-        val completeCheckBox: CheckBox = itemView.findViewById(R.id.checkboxTaskCompleted)
-        val deleteButton: ImageButton = itemView.findViewById(R.id.imageButtonDeleteTask)
-
-        init {
-            // Set up click listeners
-            completeCheckBox.setOnClickListener {
-                val position = adapterPosition
-                if (position != RecyclerView.NO_POSITION) {
-                    listener?.onTaskCompleteClicked(position)
-                }
-            }
-
-            deleteButton.setOnClickListener {
-                val position = adapterPosition
-                if (position != RecyclerView.NO_POSITION) {
-                    listener?.onTaskDeleteClicked(position)
-                }
-            }
-        }
+    inner class TaskViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
+        LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_task, parent, false)
+    ) {
+        val checkBox: CheckBox = itemView.findViewById(R.id.checkboxTaskCompleted)
+        val titleView: TextView = itemView.findViewById(R.id.textViewTaskTitle)
+        val dueView: TextView = itemView.findViewById(R.id.textViewDue)
+        val countdownView: TextView = itemView.findViewById(R.id.textViewCountdown)
+        val deleteButton: MaterialButton = itemView.findViewById(R.id.imageButtonDeleteTask)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
-        val itemView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_task, parent, false)
-        return TaskViewHolder(itemView)
+        return TaskViewHolder(parent)
     }
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
-        val currentTask = tasks[position]
+        val task = getItem(position) // Use getItem to access the task
 
-        // Bind data to views
-        holder.titleTextView.text = currentTask.title
-        holder.completeCheckBox.isChecked = currentTask.isCompleted
+        holder.titleView.text = task.title
+        holder.checkBox.apply {
+            isChecked = task.completed
+            setOnCheckedChangeListener { _, checked ->
+                task.completed = checked
+                // Log task completion status change
+                val status = if (checked) "Completed" else "Uncompleted"
+                Log.i("FinalTodoApp", "Task $status: ${task.title}")
+            }
+        }
 
-        // Format and display the due date if available
-        if (currentTask.dueDate != null) {
-            val dateFormat = java.text.SimpleDateFormat("MMM dd, yyyy - HH:mm:ss", java.util.Locale.getDefault())
-            holder.dueDateTextView.text = "Due: ${dateFormat.format(currentTask.dueDate)}"
-            holder.dueDateTextView.visibility = View.VISIBLE
-        } else {
-            holder.dueDateTextView.visibility = View.GONE
+        holder.dueView.text = task.dueDate?.let {
+            SimpleDateFormat("MMM d, yyyy h:mm a", Locale.getDefault()).format(it)
+        } ?: "No due date"
+
+        holder.countdownView.text = task.dueDate?.let { due ->
+            val diff = due.time - System.currentTimeMillis()
+            if (diff > 0) {
+                val days = TimeUnit.MILLISECONDS.toDays(diff)
+                val hours = TimeUnit.MILLISECONDS.toHours(diff) % 24
+                "${days}d ${hours}h left"
+            } else {
+                "Overdue!"
+            }
+        } ?: ""
+
+        holder.deleteButton.setOnClickListener {
+            // Log task deletion
+            Log.w("FinalTodoApp", "Task Deleted: ${task.title}")
+            onDeleteClick(task)
+        }
+
+        holder.itemView.setOnClickListener {
+            onEditClick(task)
         }
     }
 
-    override fun getItemCount() = tasks.size
-
-    // Methods to modify the task list
-    fun addTask(task: Task) {
-        tasks.add(task)
-        notifyItemInserted(tasks.size - 1)
-        Log.d(TAG, "Task Added: ${task.title}")
-    }
-
-    fun completeTask(position: Int) {
-        if (position in 0 until tasks.size) {
-            tasks[position].isCompleted = !tasks[position].isCompleted
-            notifyItemChanged(position)
-            Log.d(TAG, "Task Completed: ${tasks[position].title}")
+    // DiffUtil callback for calculating differences between old and new lists
+    class TaskDiffCallback : DiffUtil.ItemCallback<Task>() {
+        override fun areItemsTheSame(oldItem: Task, newItem: Task): Boolean {
+            return oldItem.id == newItem.id // Assuming Task has a unique ID
         }
-    }
 
-    fun deleteTask(position: Int) {
-        if (position in 0 until tasks.size) {
-            val deletedTask = tasks[position]
-            tasks.removeAt(position)
-            notifyItemRemoved(position)
-            notifyItemRangeChanged(position, tasks.size)
-            Log.d(TAG, "Task Deleted: ${deletedTask.title}")
+        override fun areContentsTheSame(oldItem: Task, newItem: Task): Boolean {
+            return oldItem == newItem
         }
     }
 }

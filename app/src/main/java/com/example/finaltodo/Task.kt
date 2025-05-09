@@ -1,5 +1,6 @@
 package com.example.finaltodo
 
+import java.io.Serializable
 import java.util.Date
 
 /**
@@ -15,5 +16,7 @@ data class Task(
     val title: String,
     val description: String = "",
     var isCompleted: Boolean = false,
-    val dueDate: Date? = null
-)
+    val dueDate: Date? = null,
+    var priority: Int = 0,
+    var completed: Boolean
+) : Serializable
