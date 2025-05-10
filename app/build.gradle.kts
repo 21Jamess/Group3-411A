@@ -43,6 +43,10 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintlayout)
+
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("androidx.datastore:datastore-core:1.0.0")
+
     // Retrofit
     implementation("com.google.code.gson:gson:2.8.5")
     implementation("com.squareup.retrofit2:retrofit:2.5.0")
