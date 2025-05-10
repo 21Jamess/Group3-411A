@@ -10,9 +10,11 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.lifecycle.Observer
 import androidx.appcompat.widget.SwitchCompat
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,15 +22,20 @@ import com.example.finaltodo.api.QuoteExecutor
 import com.example.finaltodo.databinding.ActivityMainBinding
 import com.google.android.material.textfield.TextInputEditText
 import org.w3c.dom.Text
+import java.util.Calendar
+import java.util.Locale
 import java.text.SimpleDateFormat
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private lateinit var settingsDataStore:SettingsDataStore
     private lateinit var prefs: SharedPreferences
-    private var tasks = mutableListOf<Task>()
     private lateinit var adapter: TaskAdapter
 
+    private val taskViewModel: TaskViewModel by viewModels {
+        TaskViewModelFactory(TaskRepository(this))
+    }
 
     companion object {
         private const val KEY_TASKS = "key_tasks"
@@ -42,31 +49,26 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
         applyTheme()
 
-        savedInstanceState
-            ?.getSerializable(KEY_TASKS)
-            ?.let {
-                @Suppress("UNCHECKED_CAST")
-                tasks = (it as ArrayList<Task>).toMutableList()
-            }
-
+        super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
 
+        settingsDataStore = SettingsDataStore(this)
         setupThemeSwitch()
         setupRecyclerView()
         setupFab()
 
+        taskViewModel.tasks.observe(this, Observer { tasks ->
+            adapter.updateTasks(tasks)
+        })
+        taskViewModel.loadTasks()
+
         val textViewQuote = findViewById<TextView>(R.id.textViewQuote)
-
         val quoteExecutor = QuoteExecutor()
-
         quoteExecutor.fetchQuote().observe(this) { quote ->
             if (quote != null) {
                 textViewQuote.text = "\"${quote.q}\"\n- ${quote.a}"
@@ -75,11 +77,6 @@ class MainActivity : AppCompatActivity() {
                 textViewQuote.text = "Failed to load quote."
             }
         }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putSerializable(KEY_TASKS, ArrayList(tasks))
-        super.onSaveInstanceState(outState)
     }
 
     private fun setupThemeSwitch() {
@@ -95,13 +92,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        adapter = TaskAdapter(tasks,
+        adapter = TaskAdapter(
+            emptyList(),
             onDeleteClick = { task ->
-                val idx = tasks.indexOf(task)
-                if (idx != -1) {
-                    tasks.removeAt(idx)
-                    adapter.notifyItemRemoved(idx)
-                }
+                taskViewModel.deleteTask(task)
             },
             onEditClick = { task ->
                 showAddEditDialog(task)
@@ -150,6 +144,7 @@ class MainActivity : AppCompatActivity() {
                 dueCal.get(Calendar.DAY_OF_MONTH)
             ).show()
         }
+
         view.findViewById<Button>(R.id.buttonPickTime).setOnClickListener {
             TimePickerDialog(
                 this,
@@ -176,8 +171,8 @@ class MainActivity : AppCompatActivity() {
                 else getString(R.string.button_save)
             ) { _, _ ->
                 val title = etTitle.text.toString().trim()
-                if (title.isEmpty()) return@setPositiveButton
                 val note = etNote.text.toString().trim()
+                if (title.isEmpty()) return@setPositiveButton
 
                 if (task == null) {
                     val newTask = Task(
@@ -186,18 +181,15 @@ class MainActivity : AppCompatActivity() {
                         completed = false,
                         dueDate   = dueCal.time
                     )
-                    tasks.add(newTask)
-                    adapter.notifyItemInserted(tasks.size - 1)
+                    taskViewModel.addTask(newTask)
                     Log.i("FinalTodoApp", "Task Added: $title")
                 } else {
-                    val idx = tasks.indexOf(task)
                     task.title       = title
                     task.description = note
                     task.dueDate     = dueCal.time
-                    adapter.notifyItemChanged(idx)
+                    taskViewModel.updateTask(task)
                     Log.i("FinalTodoApp", "Task Edited: $title")
                 }
-                sortByDate()
             }
             .setNegativeButton(R.string.button_cancel, null)
             .show()
@@ -252,7 +244,7 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun sortByDate() = tasks.sortBy { it.dueDate }.also { adapter.notifyDataSetChanged() }
-    private fun sortAlphabetically() = tasks.sortBy { it.title }.also { adapter.notifyDataSetChanged() }
-    private fun sortByPriority() = tasks.sortBy { it.priority }.also { adapter.notifyDataSetChanged() }
+    private fun sortByDate() = taskViewModel.sortTasksByDate()
+    private fun sortAlphabetically() = taskViewModel.sortTasksAlphabetically()
+    private fun sortByPriority() = taskViewModel.sortTasksByPriority()
 }
