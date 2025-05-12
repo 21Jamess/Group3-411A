@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.example.finaltodo.R
 import com.example.finaltodo.Task
 import com.example.finaltodo.TaskRepostitory
 import com.example.finaltodo.TaskViewModel
@@ -108,7 +109,7 @@ class AddEditTaskFragment : Fragment() {
         val description = binding.editTextNote.text.toString().trim()
 
         if (title.isEmpty()) {
-            Toast.makeText(requireContext(), "Title cannot be empty", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.title_cannot_be_empty), Toast.LENGTH_SHORT).show()
             return
         }
 

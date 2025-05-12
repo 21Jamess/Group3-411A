@@ -1,37 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- App -->
-    <string name="app_name">Lista de Tareas</string>
-    <string name="change_language">Cambiar idioma</string>
-    <string name="toggle_theme">Cambiar tema</string>
+    <!-- App name -->
+    <string name="app_name">TaskTrack</string>
+    <string name="add_task">Añadir Tarea</string>
 
-    <!-- Main screen -->
-    <string name="add_task">Agregar Tarea</string>
-    <string name="sort_tasks_by">Ordenar tareas por</string>
-    <string name="sort_date">Fecha</string>
-    <string name="sort_alpha">Alfabético</string>
-    <string name="sort_priority">Prioridad</string>
-
-    <!-- Task card -->
-    <string name="delete_task">Eliminar</string>
-    <string name="overdue">¡Atrasado!</string>
-    <string name="no_due_date">Sin fecha</string>
-    <string name="days_hours_left">%1$dd %2$dh restantes</string>
-
-    <!-- Add/Edit dialog -->
-    <string name="dialog_title_add">Agregar Tarea</string>
-    <string name="dialog_title_edit">Editar Tarea</string>
-    <string name="hint_title">Título de la tarea</string>
-    <string name="hint_notes">Notas (opcionales)</string>
-    <string name="pick_date">Elegir fecha</string>
-    <string name="no_date_chosen">Ninguna fecha</string>
-    <string name="pick_time">Elegir hora</string>
-    <string name="no_time_chosen">Ninguna hora</string>
-    <string name="button_add">Agregar</string>
-    <string name="button_save">Guardar</string>
-    <string name="button_cancel">Cancelar</string>
-
-    <!-- in res/values-es/strings.xml -->
+    <!-- Menu & button labels -->
     <string name="search">Buscar</string>
     <string name="sort">Ordenar</string>
+    <string name="settings">Ajustes</string>
+    <string name="delete">Eliminar</string>
+    <string name="language">Idioma</string>
+    <string name="choose_language">Elegir Idioma</string>
 
+    <!-- Task fields -->
+    <string name="task_title">Título</string>
+    <string name="task_description">Descripción</string>
+    <string name="task_notes">Notas (opcional)</string>
+    <string name="task_title_hint">Título de la tarea</string>
+
+    <!-- Date/Time -->
+    <string name="select_date">Seleccionar fecha</string>
+    <string name="select_time">Seleccionar hora</string>
+    <string name="pick_date">Elegir Fecha</string>
+    <string name="pick_time">Elegir Hora</string>
+    <string name="no_date_chosen">Sin fecha elegida</string>
+    <string name="no_time_chosen">Sin hora elegida</string>
+
+    <!-- Dialog and form buttons -->
+    <string name="save_task">Guardar Tarea</string>
+    <string name="edit_task">Editar Tarea</string>
+    <string name="save">Guardar</string>
+    <string name="cancel">Cancelar</string>
+
+    <!-- Sort dialog -->
+    <string name="sort_tasks_by">Ordenar Tareas Por</string>
+    <string name="sort_date">Fecha</string>
+    <string name="sort_alphabetical">Alfabético</string>
+    <string name="sort_priority">Prioridad</string>
+
+    <!-- Validation messages -->
+    <string name="title_cannot_be_empty">El título no puede estar vacío</string>
+
+    <!-- Screen titles -->
+    <string name="title_task_list">Lista de Tareas</string>
+    <string name="title_add_edit_task">Añadir/Editar Tarea</string>
 </resources>
