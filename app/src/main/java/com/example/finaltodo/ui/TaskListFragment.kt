@@ -61,6 +61,10 @@ class TaskListFragment : Fragment() {
                     putSerializable("task", task)
                 }
                 findNavController().navigate(R.id.addEditTaskFragment, bundle)
+            },
+            onCompleteStatusChanged = { task ->
+                Log.d("TaskListFragment", "Task completion status changed: ${task.title} - Completed: ${task.completed}")
+                taskViewModel.updateTask(task)
             }
         )
 
