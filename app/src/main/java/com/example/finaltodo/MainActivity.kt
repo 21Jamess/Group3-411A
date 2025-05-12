@@ -1,7 +1,6 @@
 package com.example.finaltodo
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -11,24 +10,30 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SwitchCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.preference.PreferenceManager
 import java.util.Locale
 import com.example.finaltodo.R
 import com.example.finaltodo.databinding.ActivityMainBinding
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var settingsDataStore: SettingsDataStore
-    private lateinit var prefs: SharedPreferences
     private lateinit var navController: NavController
     private val taskViewModel: TaskViewModel by viewModels {
         TaskViewModelFactory(TaskRepostitory(this))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Initialize settings data store first
+        settingsDataStore = SettingsDataStore(this)
+
         // Apply saved language
         val language = TaskApplication.getLanguage(this)
         val config = resources.configuration
@@ -37,8 +42,7 @@ class MainActivity : AppCompatActivity() {
         config.setLocale(locale)
         resources.updateConfiguration(config, resources.displayMetrics)
 
-        // theme
-        prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        // Apply theme
         applyTheme()
 
         super.onCreate(savedInstanceState)
@@ -52,7 +56,6 @@ class MainActivity : AppCompatActivity() {
         navController = navHostFragment.navController
         setupActionBarWithNavController(navController)
 
-        settingsDataStore = SettingsDataStore(this)
         setupThemeSwitch()
 
         // Load tasks once at the beginning
@@ -65,25 +68,59 @@ class MainActivity : AppCompatActivity() {
         return navController.navigateUp() || super.onSupportNavigateUp()
     }
 
-    // Theme was able to be saved
+    // Theme switch using DataStore
     private fun setupThemeSwitch() {
         val themeSwitch = binding.toolbar.findViewById<SwitchCompat>(R.id.themeSwitch)
-        themeSwitch.isChecked = prefs.getBoolean("dark_mode", false)
+
+        // Set initial state from DataStore
+        lifecycleScope.launch {
+            themeSwitch.isChecked = settingsDataStore.darkModeFlow.first()
+        }
+
+        // Listen for changes and update
         themeSwitch.setOnCheckedChangeListener { _, isChecked ->
-            prefs.edit().putBoolean("dark_mode", isChecked).apply()
-            AppCompatDelegate.setDefaultNightMode(
-                if (isChecked) AppCompatDelegate.MODE_NIGHT_YES
-                else AppCompatDelegate.MODE_NIGHT_NO
-            )
+            lifecycleScope.launch {
+                settingsDataStore.saveDarkModeSetting(isChecked)
+                AppCompatDelegate.setDefaultNightMode(
+                    if (isChecked) AppCompatDelegate.MODE_NIGHT_YES
+                    else AppCompatDelegate.MODE_NIGHT_NO
+                )
+            }
+        }
+
+        // Observe changes from DataStore
+        lifecycleScope.launch {
+            settingsDataStore.darkModeFlow.collectLatest { isDarkMode ->
+                if (themeSwitch.isChecked != isDarkMode) {
+                    themeSwitch.isChecked = isDarkMode
+                }
+            }
         }
     }
 
     private fun applyTheme() {
-        val dm = prefs.getBoolean("dark_mode", false)
+        // Use a try block to handle initialization
+        val isDarkMode = try {
+            // It's acceptable to use runBlocking here during initial UI setup
+            runBlocking { settingsDataStore.darkModeFlow.first() }
+        } catch (e: Exception) {
+            false // Default to light mode if there's an exception
+        }
+
         AppCompatDelegate.setDefaultNightMode(
-            if (dm) AppCompatDelegate.MODE_NIGHT_YES
+            if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES
             else AppCompatDelegate.MODE_NIGHT_NO
         )
+
+        // Start async observation of DataStore
+        lifecycleScope.launch {
+            settingsDataStore.darkModeFlow.collect { darkModeEnabled ->
+                AppCompatDelegate.setDefaultNightMode(
+                    if (darkModeEnabled) AppCompatDelegate.MODE_NIGHT_YES
+                    else AppCompatDelegate.MODE_NIGHT_NO
+                )
+            }
+        }
     }
 
     // ─── Menu & Sort ───────────────────────────────────────────────────────────────
@@ -146,18 +183,20 @@ class MainActivity : AppCompatActivity() {
                 // Change language
                 val language = languageCodes[which]
 
-                // Save language preference
-                TaskApplication.setLanguage(this, language)
+                // Save language preference using DataStore
+                lifecycleScope.launch {
+                    TaskApplication.setLanguage(this@MainActivity, language)
 
-                // Apply language change immediately
-                val config = resources.configuration
-                val locale = Locale(language)
-                Locale.setDefault(locale)
-                config.setLocale(locale)
-                resources.updateConfiguration(config, resources.displayMetrics)
+                    // Apply language change immediately
+                    val config = resources.configuration
+                    val locale = Locale(language)
+                    Locale.setDefault(locale)
+                    config.setLocale(locale)
+                    resources.updateConfiguration(config, resources.displayMetrics)
 
-                // Restart activity to apply changes
-                recreate()
+                    // Restart activity to apply changes
+                    recreate()
+                }
             }
             .show()
     }
