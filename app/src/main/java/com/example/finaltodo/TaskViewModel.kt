@@ -1,53 +1,70 @@
 package com.example.finaltodo
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
-class TaskViewModel(private val repository: TaskRepository): ViewModel() {
+class TaskViewModel(private val repostitory: TaskRepostitory): ViewModel() {
     private val _tasks = MutableLiveData<List<Task>>()
     val tasks: LiveData<List<Task>> = _tasks
 
     fun loadTasks() {
         viewModelScope.launch {
-            _tasks.value = repository.getAllTasks()
+            val loadedTasks = repostitory.getAllTasks()
+            Log.d("TaskViewModel", "Loaded ${loadedTasks.size} tasks")
+            _tasks.value = loadedTasks
         }
     }
 
     fun addTask(task: Task) {
         viewModelScope.launch {
-            repository.addTask(task)
+            repostitory.addTask(task)
+            Log.i("TaskViewModel", "Task added: ${task.title}")
             loadTasks()
         }
     }
 
     fun updateTask(task: Task) {
         viewModelScope.launch {
-            repository.updateTask(task)
+            repostitory.updateTask(task)
+            Log.i("TaskViewModel", "Task updated: ${task.title}")
             loadTasks()
         }
     }
 
     fun deleteTask(task: Task) {
         viewModelScope.launch {
-            repository.deleteTask(task)
+            repostitory.deleteTask(task)
+            Log.i("TaskViewModel", "Task deleted: ${task.title}")
             loadTasks()
         }
     }
 
+    // Sorting functions
     fun sortTasksByDate() {
-        _tasks.value = tasks.value?.sortedBy { it.dueDate }
+        _tasks.value?.let { currentTasks ->
+            val sortedTasks = currentTasks.sortedBy { it.dueDate }
+            Log.d("TaskViewModel", "Tasks sorted by date")
+            _tasks.value = sortedTasks
+        }
     }
 
-
     fun sortTasksAlphabetically() {
-        _tasks.value = tasks.value?.sortedBy { it.title }
+        _tasks.value?.let { currentTasks ->
+            val sortedTasks = currentTasks.sortedBy { it.title }
+            Log.d("TaskViewModel", "Tasks sorted alphabetically")
+            _tasks.value = sortedTasks
+        }
     }
 
     fun sortTasksByPriority() {
-        _tasks.value = tasks.value?.sortedBy { it.priority }
+        _tasks.value?.let { currentTasks ->
+            val sortedTasks = currentTasks.sortedBy { it.priority }
+            Log.d("TaskViewModel", "Tasks sorted by priority")
+            _tasks.value = sortedTasks
+        }
     }
-
 }

@@ -17,15 +17,12 @@ class TaskDataHelper (context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
-        val createTable = """
-            CREATE TABLE $TABLE_NAME (
-            $COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-            $COLUMN_TITLE TEXT NOT NULL,
-            $COLUMN_DESCRIPTION TEXT,
-            $COLUMN_COMPLETED INTEGER,
-            $COLUMN_DUE_DATE INTEGER
-        )
-        """.trimIndent()
+        val createTable = "Create Table $TABLE_NAME (" +
+                "$COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "$COLUMN_TITLE TEXT, " +
+                "$COLUMN_DESCRIPTION TEXT, " +
+                "$COLUMN_COMPLETED INTEGER, " +
+                "$COLUMN_DUE_DATE INTEGER)"
         db?.execSQL(createTable)
     }
 
