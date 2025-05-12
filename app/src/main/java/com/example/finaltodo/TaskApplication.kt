@@ -3,39 +3,59 @@ package com.example.finaltodo
 import android.app.Application
 import android.content.Context
 import android.content.res.Configuration
-import androidx.preference.PreferenceManager
-import com.example.finaltodo.R
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import java.util.Locale
 
 class TaskApplication : Application() {
+    private lateinit var settingsDataStore: SettingsDataStore
 
     companion object {
-        private const val LANGUAGE_KEY = "language_setting"
-        private const val DEFAULT_LANGUAGE = "en"
+        private var instance: TaskApplication? = null
 
         fun getLanguage(context: Context): String {
-            val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-            return prefs.getString(LANGUAGE_KEY, DEFAULT_LANGUAGE) ?: DEFAULT_LANGUAGE
+            try {
+                val settingsDataStore = SettingsDataStore(context.applicationContext)
+                return runBlocking {
+                    settingsDataStore.languageFlow.first()
+                }
+            } catch (e: Exception) {
+                return SettingsDataStore.DEFAULT_LANGUAGE
+            }
         }
 
-        fun setLanguage(context: Context, language: String) {
-            val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-            prefs.edit().putString(LANGUAGE_KEY, language).apply()
+        suspend fun setLanguage(context: Context, language: String) {
+            val settingsDataStore = SettingsDataStore(context.applicationContext)
+            settingsDataStore.saveLanguageSetting(language)
+        }
+
+        // For compatibility with synchronous code
+        fun setLanguageSync(context: Context, language: String) {
+            runBlocking {
+                setLanguage(context.applicationContext, language)
+            }
         }
     }
 
     override fun attachBaseContext(base: Context) {
-        val language = getLanguage(base)
+        // Initialize with a language for the base context
+        val language = try {
+            val store = SettingsDataStore(base)
+            runBlocking { store.languageFlow.first() }
+        } catch (e: Exception) {
+            SettingsDataStore.DEFAULT_LANGUAGE
+        }
+
         super.attachBaseContext(LocaleHelper.setLocale(base, language))
     }
 
     override fun onCreate() {
         super.onCreate()
-
-        // Apply saved language
-        val language = getLanguage(this)
+        instance = this
+        settingsDataStore = SettingsDataStore(applicationContext)
 
         // Apply language configuration
+        val language = runBlocking { settingsDataStore.languageFlow.first() }
         val config = resources.configuration
         val locale = Locale(language)
         Locale.setDefault(locale)
