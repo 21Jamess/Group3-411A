@@ -1,5 +1,6 @@
 package com.example.finaltodo
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
@@ -14,6 +15,8 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.preference.PreferenceManager
+import java.util.Locale
+import com.example.finaltodo.R
 import com.example.finaltodo.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -26,6 +29,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Apply saved language
+        val language = TaskApplication.getLanguage(this)
+        val config = resources.configuration
+        val locale = Locale(language)
+        Locale.setDefault(locale)
+        config.setLocale(locale)
+        resources.updateConfiguration(config, resources.displayMetrics)
+
         // theme
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
         applyTheme()
@@ -88,13 +99,21 @@ class MainActivity : AppCompatActivity() {
                 showSortDialog()
                 true
             }
+            R.id.action_language -> {
+                showLanguageDialog()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
 
     private fun showSortDialog() {
-        val options = arrayOf("Date", "Alphabetical", "Priority")
+        val options = arrayOf(
+            getString(R.string.sort_date),
+            getString(R.string.sort_alphabetical),
+            getString(R.string.sort_priority)
+        )
         AlertDialog.Builder(this)
-            .setTitle("Sort Tasks By")
+            .setTitle(R.string.sort_tasks_by)
             .setItems(options) { _, which ->
                 when(which) {
                     0 -> sortByDate()
@@ -115,5 +134,36 @@ class MainActivity : AppCompatActivity() {
 
     private fun sortByPriority() {
         taskViewModel.sortTasksByPriority()
+    }
+
+    private fun showLanguageDialog() {
+        val languages = arrayOf("English", "Español", "Tiếng Việt")
+        val languageCodes = arrayOf("en", "es", "vi")
+
+        AlertDialog.Builder(this)
+            .setTitle(R.string.choose_language)
+            .setItems(languages) { _, which ->
+                // Change language
+                val language = languageCodes[which]
+
+                // Save language preference
+                TaskApplication.setLanguage(this, language)
+
+                // Apply language change immediately
+                val config = resources.configuration
+                val locale = Locale(language)
+                Locale.setDefault(locale)
+                config.setLocale(locale)
+                resources.updateConfiguration(config, resources.displayMetrics)
+
+                // Restart activity to apply changes
+                recreate()
+            }
+            .show()
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        val language = TaskApplication.getLanguage(newBase)
+        super.attachBaseContext(LocaleHelper.setLocale(newBase, language))
     }
 }

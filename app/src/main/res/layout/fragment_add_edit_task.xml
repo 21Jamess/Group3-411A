@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:hint="Title">
+        android:hint="@string/task_title">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextTitle"
@@ -23,7 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:hint="Description">
+        android:hint="@string/task_description">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextNote"
@@ -42,13 +42,13 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Select date" />
+            android:text="@string/select_date" />
 
         <Button
             android:id="@+id/buttonPickDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Pick Date" />
+            android:text="@string/pick_date" />
     </LinearLayout>
 
     <LinearLayout
@@ -62,19 +62,19 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Select time" />
+            android:text="@string/select_time" />
 
         <Button
             android:id="@+id/buttonPickTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Pick Time" />
+            android:text="@string/pick_time" />
     </LinearLayout>
 
     <Button
         android:id="@+id/buttonSaveTask"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Save Task" />
+        android:text="@string/save_task" />
 
 </LinearLayout>
