@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.navigation.fragment.findNavController
 import com.example.finaltodo.Task
 import com.example.finaltodo.TaskAdapter
-import com.example.finaltodo.CounterViewModel
 import com.example.finaltodo.databinding.FragmentTaskBinding
 
 class TaskListFragment : Fragment() {

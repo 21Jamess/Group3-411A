@@ -39,46 +39,13 @@
         </com.google.android.material.appbar.MaterialToolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/nav_host_fragment"
+        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:paddingTop="?attr/actionBarSize"
-        android:paddingBottom="88dp"
+        app:defaultNavHost="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:listitem="@layout/item_task" />
-
-    <LinearLayout
-        android:id="@+id/bottom_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:orientation="vertical"
-        android:padding="8dp"
-        app:layout_insetEdge="bottom">
-
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/fab_add_task"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_margin="16dp"
-            android:text="@string/add_task"
-            app:backgroundTint="?attr/colorPrimary"
-            app:icon="@drawable/ic_add"
-            app:iconTint="?attr/colorOnPrimary"
-            android:textColor="?attr/colorOnPrimary"
-            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.SmallComponent"/>
-
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/textViewQuote"
-        android:layout_width="343dp"
-        android:layout_height="77dp"
-        android:text="TextView"
-        app:layout_anchor="@+id/bottom_layout"
-        app:layout_anchorGravity="center" />
+        app:navGraph="@navigation/nav_graph" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
