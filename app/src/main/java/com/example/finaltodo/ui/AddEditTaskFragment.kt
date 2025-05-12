@@ -130,7 +130,8 @@ class AddEditTaskFragment : Fragment() {
             val updatedTask = taskToEdit!!.copy(
                 title = title,
                 description = description,
-                dueDate = calendar.time
+                dueDate = calendar.time,
+                completed = taskToEdit!!.completed // Preserve completion status
             )
             taskViewModel.updateTask(updatedTask)
         }

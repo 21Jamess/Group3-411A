@@ -14,7 +14,8 @@ import java.util.concurrent.TimeUnit
 class TaskAdapter(
     private var tasks: List<Task>,
     private val onDeleteClick: (Task) -> Unit,
-    private val onEditClick: (Task) -> Unit
+    private val onEditClick: (Task) -> Unit,
+    private val onCompleteStatusChanged: (Task) -> Unit
 ) : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
 
     inner class TaskViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
@@ -41,10 +42,16 @@ class TaskAdapter(
         holder.checkBox.apply {
             isChecked = task.completed
             setOnCheckedChangeListener { _, checked ->
-                task.completed = checked
-                // Log task completion status change
-                val status = if (checked) "Completed" else "Uncompleted"
-                Log.i("FinalTodoApp", "Task $status: ${task.title}")
+                // Only update if the status actually changed
+                if (task.completed != checked) {
+                    task.completed = checked
+                    // Log task completion status change
+                    val status = if (checked) "Completed" else "Uncompleted"
+                    Log.i("FinalTodoApp", "Task $status: ${task.title}")
+
+                    // Notify listener to save the updated status
+                    onCompleteStatusChanged(task)
+                }
             }
         }
 
