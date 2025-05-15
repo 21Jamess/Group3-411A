@@ -38,22 +38,12 @@ class TaskAdapter(
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         val task = tasks[position]
 
+        // Clear previous listeners to prevent duplicate events
+        holder.checkBox.setOnCheckedChangeListener(null)
+        
+        // Set UI state
         holder.titleView.text = task.title
-        holder.checkBox.apply {
-            isChecked = task.completed
-            setOnCheckedChangeListener { _, checked ->
-                // Only update if the status actually changed
-                if (task.completed != checked) {
-                    task.completed = checked
-                    // Log task completion status change
-                    val status = if (checked) "Completed" else "Uncompleted"
-                    Log.i("FinalTodoApp", "Task $status: ${task.title}")
-
-                    // Notify listener to save the updated status
-                    onCompleteStatusChanged(task)
-                }
-            }
-        }
+        holder.checkBox.isChecked = task.completed
 
         holder.dueView.text = task.dueDate?.let {
             SimpleDateFormat("MMM d, yyyy h:mm a", Locale.getDefault()).format(it)
@@ -70,14 +60,36 @@ class TaskAdapter(
             }
         } ?: ""
 
+        // Set listeners after UI is configured
+        holder.checkBox.setOnCheckedChangeListener { _, checked ->
+            // Only update if the status actually changed
+            if (task.completed != checked) {
+                // Create a copy with updated status instead of modifying original
+                val updatedTask = task.copy(completed = checked)
+                val status = if (checked) "Completed" else "Uncompleted"
+                Log.i("FinalTodoApp", "Task $status: ${task.title}")
+
+                // Post the update to happen after the current layout pass
+                holder.itemView.post {
+                    onCompleteStatusChanged(updatedTask)
+                }
+            }
+        }
+
         holder.deleteButton.setOnClickListener {
             // Log task deletion
             Log.w("FinalTodoApp", "Task Deleted: ${task.title}")
-            onDeleteClick(task)
+            // Also post delete operations
+            holder.itemView.post {
+                onDeleteClick(task)
+            }
         }
 
         holder.itemView.setOnClickListener {
-            onEditClick(task)
+            // Post edit operations too for consistency
+            holder.itemView.post {
+                onEditClick(task)
+            }
         }
     }
 
