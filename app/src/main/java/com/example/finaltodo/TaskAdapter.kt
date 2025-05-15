@@ -97,4 +97,20 @@ class TaskAdapter(
         tasks = newTasks
         notifyDataSetChanged()
     }
+
+    fun deleteCompletedTasks() {
+        // Get all completed tasks
+        val completedTasks = tasks.filter { it.completed }
+        
+        // Skip if no completed tasks
+        if (completedTasks.isEmpty()) return
+        
+        // Log batch deletion
+        Log.w("FinalTodoApp", "Deleting ${completedTasks.size} completed tasks")
+        
+        // Delete each completed task
+        completedTasks.forEach { task ->
+            onDeleteClick(task)
+        }
+    }
 }
