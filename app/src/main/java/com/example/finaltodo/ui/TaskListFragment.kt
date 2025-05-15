@@ -83,6 +83,26 @@ class TaskListFragment : Fragment() {
             findNavController().navigate(R.id.addEditTaskFragment)
         }
 
+        binding.buttonDeleteCompleted.setOnClickListener {
+            Log.d("TaskListFragment", "Delete completed tasks clicked")
+            // Get the current completed tasks from the ViewModel
+            val completedTasks = taskViewModel.tasks.value?.filter { it.completed } ?: emptyList()
+            
+            // Skip if no completed tasks
+            if (completedTasks.isEmpty()) {
+                Log.d("TaskListFragment", "No completed tasks to delete")
+                return@setOnClickListener
+            }
+            
+            // Log how many tasks we're deleting
+            Log.d("TaskListFragment", "Deleting ${completedTasks.size} completed tasks")
+            
+            // Delete each completed task using the ViewModel
+            completedTasks.forEach { task ->
+                taskViewModel.deleteTask(task)
+            }
+        }
+
         // Load tasks
         taskViewModel.loadTasks()
     }
