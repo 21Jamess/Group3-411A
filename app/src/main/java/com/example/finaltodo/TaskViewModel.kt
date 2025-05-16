@@ -10,11 +10,15 @@ import kotlinx.coroutines.launch
 class TaskViewModel(private val repostitory: TaskRepostitory): ViewModel() {
     private val _tasks = MutableLiveData<List<Task>>()
     val tasks: LiveData<List<Task>> = _tasks
-
+    
+    // Store original unfiltered tasks
+    private var originalTasks: List<Task> = emptyList()
+    
     fun loadTasks() {
         viewModelScope.launch {
             val loadedTasks = repostitory.getAllTasks()
             Log.d("TaskViewModel", "Loaded ${loadedTasks.size} tasks")
+            originalTasks = loadedTasks
             _tasks.value = loadedTasks
         }
     }
@@ -66,5 +70,23 @@ class TaskViewModel(private val repostitory: TaskRepostitory): ViewModel() {
             Log.d("TaskViewModel", "Tasks sorted by priority")
             _tasks.value = sortedTasks
         }
+    }
+    
+    // Search function
+    fun searchTasks(query: String) {
+        if (query.isBlank()) {
+            // If search is empty, show all tasks
+            _tasks.value = originalTasks
+            return
+        }
+        
+        val lowercaseQuery = query.lowercase()
+        val filteredTasks = originalTasks.filter { task ->
+            task.title.lowercase().contains(lowercaseQuery) || 
+            task.description.lowercase().contains(lowercaseQuery)
+        }
+        
+        Log.d("TaskViewModel", "Search query: '$query', found ${filteredTasks.size} matching tasks")
+        _tasks.value = filteredTasks
     }
 }

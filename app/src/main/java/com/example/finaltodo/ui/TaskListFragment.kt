@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -70,6 +71,12 @@ class TaskListFragment : Fragment() {
 
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = adapter
+
+        // Set up search functionality
+        binding.editTextSearch.addTextChangedListener { text ->
+            Log.d("TaskListFragment", "Search query changed: ${text?.toString() ?: ""}")
+            taskViewModel.searchTasks(text?.toString() ?: "")
+        }
 
         // Observe tasks from TaskViewModel
         taskViewModel.tasks.observe(viewLifecycleOwner, Observer { tasks ->
