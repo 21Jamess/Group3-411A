@@ -113,4 +113,21 @@ class TaskAdapter(
             onDeleteClick(task)
         }
     }
+    
+    fun selectAllTasks() {
+        // Get all tasks that are not completed
+        val uncompletedTasks = tasks.filter { !it.completed }
+        
+        // Skip if no uncompleted tasks
+        if (uncompletedTasks.isEmpty()) return
+        
+        // Log how many tasks we're selecting
+        Log.i("FinalTodoApp", "Selecting all ${uncompletedTasks.size} uncompleted tasks")
+        
+        // Mark each task as completed
+        uncompletedTasks.forEach { task ->
+            val updatedTask = task.copy(completed = true)
+            onCompleteStatusChanged(updatedTask)
+        }
+    }
 }
