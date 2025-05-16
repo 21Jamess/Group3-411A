@@ -15,6 +15,7 @@ class TaskRepostitory(context: Context) {
             put(TaskDataHelper.COLUMN_DESCRIPTION, task.description)
             put(TaskDataHelper.COLUMN_COMPLETED, if (task.completed) 1 else 0)
             put(TaskDataHelper.COLUMN_DUE_DATE, task.dueDate?.time)
+            put(TaskDataHelper.COLUMN_COMPLETED_DATE, task.completedDate?.time)
         }
         db.insert(TaskDataHelper.TABLE_NAME, null, values)
     }
@@ -33,9 +34,20 @@ class TaskRepostitory(context: Context) {
                 val description = getString(getColumnIndexOrThrow(TaskDataHelper.COLUMN_DESCRIPTION))
                 val completed = getInt(getColumnIndexOrThrow(TaskDataHelper.COLUMN_COMPLETED)) == 1
                 val dueDate = getLong(getColumnIndexOrThrow(TaskDataHelper.COLUMN_DUE_DATE)).let {
-                    if (it != 0L) Date(it) else  null
+                    if (it != 0L) Date(it) else null
                 }
-                tasks.add(Task(id, title, description, completed, dueDate))
+                
+                // Get completedDate - safely handle case where column might not exist in older DB versions
+                val completedDate = try {
+                    val completedDateIndex = getColumnIndexOrThrow(TaskDataHelper.COLUMN_COMPLETED_DATE)
+                    getLong(completedDateIndex).let {
+                        if (it != 0L) Date(it) else null
+                    }
+                } catch (e: Exception) {
+                    null
+                }
+                
+                tasks.add(Task(id, title, description, completed, dueDate, completedDate))
             }
         }
         cursor.close()
@@ -49,6 +61,7 @@ class TaskRepostitory(context: Context) {
             put(TaskDataHelper.COLUMN_DESCRIPTION, task.description)
             put(TaskDataHelper.COLUMN_COMPLETED, if (task.completed) 1 else 0)
             put(TaskDataHelper.COLUMN_DUE_DATE, task.dueDate?.time)
+            put(TaskDataHelper.COLUMN_COMPLETED_DATE, task.completedDate?.time)
         }
         db.update(TaskDataHelper.TABLE_NAME, values, "${TaskDataHelper.COLUMN_ID} = ?", arrayOf(task.id.toString()))
     }

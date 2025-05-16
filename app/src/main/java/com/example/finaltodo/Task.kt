@@ -9,5 +9,6 @@ data class Task(
     var description: String,
     var completed: Boolean,
     var dueDate: Date?,
+    var completedDate: Date? = null,
     var priority: Int = 0
 ) : Serializable
