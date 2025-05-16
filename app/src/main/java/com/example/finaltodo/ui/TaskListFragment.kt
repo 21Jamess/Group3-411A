@@ -102,6 +102,24 @@ class TaskListFragment : Fragment() {
                 taskViewModel.deleteTask(task)
             }
         }
+        
+        // Add select all button click listener
+        binding.buttonSelectAll.setOnClickListener {
+            Log.d("TaskListFragment", "Select all tasks clicked")
+            
+            // Get uncompleted tasks count for logging
+            val uncompletedTasksCount = taskViewModel.tasks.value?.count { !it.completed } ?: 0
+            
+            if (uncompletedTasksCount == 0) {
+                Log.d("TaskListFragment", "No uncompleted tasks to select")
+                return@setOnClickListener
+            }
+            
+            Log.d("TaskListFragment", "Selecting all $uncompletedTasksCount uncompleted tasks")
+            
+            // Use adapter's select all function
+            adapter.selectAllTasks()
+        }
 
         // Load tasks
         taskViewModel.loadTasks()
