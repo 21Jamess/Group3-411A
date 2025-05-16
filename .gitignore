@@ -54,3 +54,6 @@ lint/generated/
 # Misc
 out/
 *.orig
+
+# Project specific
+cursorrules
