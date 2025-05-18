@@ -13,6 +13,7 @@ class TaskDataHelper (context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         const val COLUMN_COMPLETED = "completed"
         const val COLUMN_DUE_DATE = "due_date"
         const val COLUMN_COMPLETED_DATE = "completed_date"
+        const val COLUMN_PRIORITY = "priority"
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
@@ -27,7 +28,8 @@ class TaskDataHelper (context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
                 description_vi TEXT,
                 $COLUMN_COMPLETED INTEGER,
                 $COLUMN_DUE_DATE INTEGER,
-                $COLUMN_COMPLETED_DATE INTEGER
+                $COLUMN_COMPLETED_DATE INTEGER,
+                priority INTEGER DEFAULT 0
             )
         """.trimIndent()
         db?.execSQL(createTable)
@@ -41,6 +43,7 @@ class TaskDataHelper (context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
             db?.execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN description_en TEXT")
             db?.execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN description_es TEXT")
             db?.execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN description_vi TEXT")
+            db?.execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN priority INTEGER DEFAULT 0")
         }
     }
 }

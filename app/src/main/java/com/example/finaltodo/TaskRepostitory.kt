@@ -20,6 +20,7 @@ class TaskRepostitory(context: Context) {
             put(TaskDataHelper.COLUMN_COMPLETED, if (task.completed) 1 else 0)
             put(TaskDataHelper.COLUMN_DUE_DATE, task.dueDate?.time)
             put(TaskDataHelper.COLUMN_COMPLETED_DATE, task.completedDate?.time)
+            put("priority", task.priority)
         }
         db.insert(TaskDataHelper.TABLE_NAME, null, values)
     }
@@ -54,8 +55,14 @@ class TaskRepostitory(context: Context) {
                 } catch (e: Exception) {
                     null
                 }
+
+                val priority = try {
+                    getInt(getColumnIndexOrThrow("priority"))
+                } catch (e: Exception) {
+                    0
+                }
                 
-                tasks.add(Task(id, titleEn, titleEs, titleVi, descriptionEn, descriptionEs, descriptionVi, completed, dueDate, completedDate))
+                tasks.add(Task(id, titleEn, titleEs, titleVi, descriptionEn, descriptionEs, descriptionVi, completed, dueDate, completedDate, priority))
             }
         }
         cursor.close()
@@ -74,6 +81,7 @@ class TaskRepostitory(context: Context) {
             put(TaskDataHelper.COLUMN_COMPLETED, if (task.completed) 1 else 0)
             put(TaskDataHelper.COLUMN_DUE_DATE, task.dueDate?.time)
             put(TaskDataHelper.COLUMN_COMPLETED_DATE, task.completedDate?.time)
+            put("priority", task.priority)
         }
         db.update(TaskDataHelper.TABLE_NAME, values, "${TaskDataHelper.COLUMN_ID} = ?", arrayOf(task.id.toString()))
     }

@@ -52,8 +52,8 @@ class AddEditTaskFragment : Fragment() {
 
         // Fill form with existing task data if editing
         taskToEdit?.let { task ->
-            binding.editTextTitle.setText(task.title)
-            binding.editTextNote.setText(task.description)
+            binding.editTextTitle.setText(task.getLocalizedTitle(Locale.getDefault().language))
+            binding.editTextNote.setText(task.getLocalizedDescription(Locale.getDefault().language))
             task.dueDate?.let { date ->
                 calendar.time = date
                 updateDateTimeText()
@@ -118,8 +118,12 @@ class AddEditTaskFragment : Fragment() {
         if (taskToEdit == null) {
             // Create new task
             val newTask = Task(
-                title = title,
-                description = description,
+                titleEn = title,
+                titleEs = title,
+                titleVi = title,
+                descriptionEn = description,
+                descriptionEs = description,
+                descriptionVi = description,
                 completed = false,
                 dueDate = calendar.time,
                 priority = 0
@@ -128,8 +132,12 @@ class AddEditTaskFragment : Fragment() {
         } else {
             // Update existing task
             val updatedTask = taskToEdit!!.copy(
-                title = title,
-                description = description,
+                titleEn = title,
+                titleEs = title,
+                titleVi = title,
+                descriptionEn = description,
+                descriptionEs = description,
+                descriptionVi = description,
                 dueDate = calendar.time,
                 completed = taskToEdit!!.completed // Preserve completion status
             )
