@@ -7,31 +7,40 @@ import android.database.sqlite.SQLiteOpenHelper
 class TaskDataHelper (context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION){
     companion object {
         private const val DATABASE_NAME = "tasks.db"
-        private const val DATABASE_VERSION = 2
+        private const val DATABASE_VERSION = 3
         const val TABLE_NAME = "tasks"
         const val COLUMN_ID = "id"
-        const val COLUMN_TITLE = "title"
-        const val COLUMN_DESCRIPTION = "description"
         const val COLUMN_COMPLETED = "completed"
         const val COLUMN_DUE_DATE = "due_date"
         const val COLUMN_COMPLETED_DATE = "completed_date"
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
-        val createTable = "Create Table $TABLE_NAME (" +
-                "$COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "$COLUMN_TITLE TEXT, " +
-                "$COLUMN_DESCRIPTION TEXT, " +
-                "$COLUMN_COMPLETED INTEGER, " +
-                "$COLUMN_DUE_DATE INTEGER, " +
-                "$COLUMN_COMPLETED_DATE INTEGER)"
+        val createTable = """
+            CREATE TABLE $TABLE_NAME (
+                $COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                title_en TEXT,
+                title_es TEXT,
+                title_vi TEXT,
+                description_en TEXT,
+                description_es TEXT,
+                description_vi TEXT,
+                $COLUMN_COMPLETED INTEGER,
+                $COLUMN_DUE_DATE INTEGER,
+                $COLUMN_COMPLETED_DATE INTEGER
+            )
+        """.trimIndent()
         db?.execSQL(createTable)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-        if (oldVersion < 2) {
-            // Add completed_date column for users upgrading from version 1
-            db?.execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN $COLUMN_COMPLETED_DATE INTEGER")
+        if (oldVersion < 3) {
+            db?.execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN title_en TEXT")
+            db?.execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN title_es TEXT")
+            db?.execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN title_vi TEXT")
+            db?.execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN description_en TEXT")
+            db?.execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN description_es TEXT")
+            db?.execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN description_vi TEXT")
         }
     }
 }

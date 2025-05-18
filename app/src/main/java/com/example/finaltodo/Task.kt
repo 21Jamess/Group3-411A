@@ -5,10 +5,26 @@ import java.util.Date
 
 data class Task(
     val id: Int = 0,
-    var title: String,
-    var description: String,
+    var titleEn: String,
+    var titleEs: String,
+    var titleVi: String,
+    var descriptionEn: String,
+    var descriptionEs: String,
+    var descriptionVi: String,
     var completed: Boolean,
     var dueDate: Date?,
     var completedDate: Date? = null,
     var priority: Int = 0
-) : Serializable
+) : Serializable {
+    fun getLocalizedTitle(language: String): String = when (language) {
+        "es" -> titleEs
+        "vi" -> titleVi
+        else -> titleEn
+    }
+
+    fun getLocalizedDescription(language: String): String = when (language) {
+        "es" -> descriptionEs
+        "vi" -> descriptionVi
+        else -> descriptionEn
+    }
+}

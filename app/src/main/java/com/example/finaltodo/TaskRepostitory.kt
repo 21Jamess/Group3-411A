@@ -11,8 +11,12 @@ class TaskRepostitory(context: Context) {
     fun addTask(task: Task) {
         val db = dbHelper.writableDatabase
         val values = ContentValues().apply {
-            put(TaskDataHelper.COLUMN_TITLE, task.title)
-            put(TaskDataHelper.COLUMN_DESCRIPTION, task.description)
+            put("title_en", task.titleEn)
+            put("title_es", task.titleEs)
+            put("title_vi", task.titleVi)
+            put("description_en", task.descriptionEn)
+            put("description_es", task.descriptionEs)
+            put("description_vi", task.descriptionVi)
             put(TaskDataHelper.COLUMN_COMPLETED, if (task.completed) 1 else 0)
             put(TaskDataHelper.COLUMN_DUE_DATE, task.dueDate?.time)
             put(TaskDataHelper.COLUMN_COMPLETED_DATE, task.completedDate?.time)
@@ -30,8 +34,12 @@ class TaskRepostitory(context: Context) {
         with(cursor) {
             while (moveToNext()) {
                 val id = getInt(getColumnIndexOrThrow(TaskDataHelper.COLUMN_ID))
-                val title = getString(getColumnIndexOrThrow(TaskDataHelper.COLUMN_TITLE))
-                val description = getString(getColumnIndexOrThrow(TaskDataHelper.COLUMN_DESCRIPTION))
+                val titleEn = getString(getColumnIndexOrThrow("title_en")) ?: ""
+                val titleEs = getString(getColumnIndexOrThrow("title_es")) ?: ""
+                val titleVi = getString(getColumnIndexOrThrow("title_vi")) ?: ""
+                val descriptionEn = getString(getColumnIndexOrThrow("description_en")) ?: ""
+                val descriptionEs = getString(getColumnIndexOrThrow("description_es")) ?: ""
+                val descriptionVi = getString(getColumnIndexOrThrow("description_vi")) ?: ""
                 val completed = getInt(getColumnIndexOrThrow(TaskDataHelper.COLUMN_COMPLETED)) == 1
                 val dueDate = getLong(getColumnIndexOrThrow(TaskDataHelper.COLUMN_DUE_DATE)).let {
                     if (it != 0L) Date(it) else null
@@ -47,7 +55,7 @@ class TaskRepostitory(context: Context) {
                     null
                 }
                 
-                tasks.add(Task(id, title, description, completed, dueDate, completedDate))
+                tasks.add(Task(id, titleEn, titleEs, titleVi, descriptionEn, descriptionEs, descriptionVi, completed, dueDate, completedDate))
             }
         }
         cursor.close()
@@ -57,8 +65,12 @@ class TaskRepostitory(context: Context) {
     fun updateTask(task: Task) {
         val db = dbHelper.writableDatabase
         val values = ContentValues().apply {
-            put(TaskDataHelper.COLUMN_TITLE, task.title)
-            put(TaskDataHelper.COLUMN_DESCRIPTION, task.description)
+            put("title_en", task.titleEn)
+            put("title_es", task.titleEs)
+            put("title_vi", task.titleVi)
+            put("description_en", task.descriptionEn)
+            put("description_es", task.descriptionEs)
+            put("description_vi", task.descriptionVi)
             put(TaskDataHelper.COLUMN_COMPLETED, if (task.completed) 1 else 0)
             put(TaskDataHelper.COLUMN_DUE_DATE, task.dueDate?.time)
             put(TaskDataHelper.COLUMN_COMPLETED_DATE, task.completedDate?.time)

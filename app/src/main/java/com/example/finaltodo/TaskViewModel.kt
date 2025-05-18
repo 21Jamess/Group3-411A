@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 class TaskViewModel(private val repostitory: TaskRepostitory): ViewModel() {
     private val _tasks = MutableLiveData<List<Task>>()
@@ -26,7 +27,7 @@ class TaskViewModel(private val repostitory: TaskRepostitory): ViewModel() {
     fun addTask(task: Task) {
         viewModelScope.launch {
             repostitory.addTask(task)
-            Log.i("TaskViewModel", "Task added: ${task.title}")
+            Log.i("TaskViewModel", "Task added: ${task.getLocalizedTitle(Locale.getDefault().language)}")
             loadTasks()
         }
     }
@@ -34,7 +35,7 @@ class TaskViewModel(private val repostitory: TaskRepostitory): ViewModel() {
     fun updateTask(task: Task) {
         viewModelScope.launch {
             repostitory.updateTask(task)
-            Log.i("TaskViewModel", "Task updated: ${task.title}")
+            Log.i("TaskViewModel", "Task updated: ${task.getLocalizedTitle(Locale.getDefault().language)}")
             loadTasks()
         }
     }
@@ -42,7 +43,7 @@ class TaskViewModel(private val repostitory: TaskRepostitory): ViewModel() {
     fun deleteTask(task: Task) {
         viewModelScope.launch {
             repostitory.deleteTask(task)
-            Log.i("TaskViewModel", "Task deleted: ${task.title}")
+            Log.i("TaskViewModel", "Task deleted: ${task.getLocalizedTitle(Locale.getDefault().language)}")
             loadTasks()
         }
     }
@@ -57,8 +58,9 @@ class TaskViewModel(private val repostitory: TaskRepostitory): ViewModel() {
     }
 
     fun sortTasksAlphabetically() {
+        val lang = Locale.getDefault().language
         _tasks.value?.let { currentTasks ->
-            val sortedTasks = currentTasks.sortedBy { it.title }
+            val sortedTasks = currentTasks.sortedBy { it.getLocalizedTitle((lang)) }
             Log.d("TaskViewModel", "Tasks sorted alphabetically")
             _tasks.value = sortedTasks
         }
@@ -74,6 +76,7 @@ class TaskViewModel(private val repostitory: TaskRepostitory): ViewModel() {
     
     // Search function
     fun searchTasks(query: String) {
+        val lang = Locale.getDefault().language
         if (query.isBlank()) {
             // If search is empty, show all tasks
             _tasks.value = originalTasks
@@ -82,8 +85,8 @@ class TaskViewModel(private val repostitory: TaskRepostitory): ViewModel() {
         
         val lowercaseQuery = query.lowercase()
         val filteredTasks = originalTasks.filter { task ->
-            task.title.lowercase().contains(lowercaseQuery) || 
-            task.description.lowercase().contains(lowercaseQuery)
+            task.getLocalizedTitle(lang).lowercase().contains(lowercaseQuery) ||
+            task.getLocalizedDescription(lang).lowercase().contains(lowercaseQuery)
         }
         
         Log.d("TaskViewModel", "Search query: '$query', found ${filteredTasks.size} matching tasks")

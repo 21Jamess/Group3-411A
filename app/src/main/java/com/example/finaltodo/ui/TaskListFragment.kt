@@ -19,6 +19,7 @@ import com.example.finaltodo.TaskViewModelFactory
 import com.example.finaltodo.TaskRepostitory
 import com.example.finaltodo.api.QuoteExecutor
 import com.example.finaltodo.databinding.FragmentTaskListBinding
+import java.util.Locale
 
 class TaskListFragment : Fragment() {
 
@@ -49,14 +50,15 @@ class TaskListFragment : Fragment() {
         loadMotivationalQuote()
 
         // Setup adapter
+        val language = Locale.getDefault().language
         adapter = TaskAdapter(
             taskViewModel.tasks.value ?: emptyList(),
             onDeleteClick = { task ->
-                Log.d("TaskListFragment", "Delete task: ${task.title}")
+                Log.d("TaskListFragment", "Delete task: ${task.getLocalizedTitle(language)}")
                 taskViewModel.deleteTask(task)
             },
             onEditClick = { task ->
-                Log.d("TaskListFragment", "Edit task: ${task.title}")
+                Log.d("TaskListFragment", "Edit task: ${task.getLocalizedTitle(language)}")
                 // Navigate to AddEditTaskFragment with task
                 val bundle = Bundle().apply {
                     putSerializable("task", task)
@@ -64,7 +66,7 @@ class TaskListFragment : Fragment() {
                 findNavController().navigate(R.id.addEditTaskFragment, bundle)
             },
             onCompleteStatusChanged = { task ->
-                Log.d("TaskListFragment", "Task completion status changed: ${task.title} - Completed: ${task.completed}")
+                Log.d("TaskListFragment", "Task completion status changed: ${task.getLocalizedTitle(language)} - Completed: ${task.completed}")
                 taskViewModel.updateTask(task)
             }
         )

@@ -43,7 +43,8 @@ class TaskAdapter(
         holder.checkBox.setOnCheckedChangeListener(null)
         
         // Set UI state
-        holder.titleView.text = task.title
+        val language = Locale.getDefault().language
+        holder.titleView.text = task.getLocalizedTitle(language)
         holder.checkBox.isChecked = task.completed
 
         holder.dueView.text = task.dueDate?.let {
@@ -82,7 +83,7 @@ class TaskAdapter(
                 }
                 
                 val status = if (checked) "Completed" else "Uncompleted"
-                Log.i("FinalTodoApp", "Task $status: ${task.title}")
+                Log.i("FinalTodoApp", "Task $status: ${task.getLocalizedTitle(language)}")
 
                 // Post the update to happen after the current layout pass
                 holder.itemView.post {
@@ -93,7 +94,7 @@ class TaskAdapter(
 
         holder.deleteButton.setOnClickListener {
             // Log task deletion
-            Log.w("FinalTodoApp", "Task Deleted: ${task.title}")
+            Log.w("FinalTodoApp", "Task Deleted: ${task.getLocalizedTitle(language)}")
             // Also post delete operations
             holder.itemView.post {
                 onDeleteClick(task)
