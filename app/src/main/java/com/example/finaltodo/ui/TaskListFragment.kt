@@ -12,11 +12,10 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.finaltodo.R
-import com.example.finaltodo.Task
 import com.example.finaltodo.TaskAdapter
+import com.example.finaltodo.TaskRepostitory
 import com.example.finaltodo.TaskViewModel
 import com.example.finaltodo.TaskViewModelFactory
-import com.example.finaltodo.TaskRepostitory
 import com.example.finaltodo.api.QuoteExecutor
 import com.example.finaltodo.databinding.FragmentTaskListBinding
 import java.util.Locale
@@ -29,8 +28,12 @@ class TaskListFragment : Fragment() {
     private val taskViewModel: TaskViewModel by activityViewModels {
         TaskViewModelFactory(TaskRepostitory(requireContext()))
     }
-    private lateinit var adapter: TaskAdapter
+    private lateinit var incompleteAdapter: TaskAdapter
+    private lateinit var completedAdapter: TaskAdapter
+
     private lateinit var quoteExecutor: QuoteExecutor
+    private var doneTasks = false
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,8 +54,27 @@ class TaskListFragment : Fragment() {
 
         // Setup adapter
         val language = Locale.getDefault().language
-        adapter = TaskAdapter(
-            taskViewModel.tasks.value ?: emptyList(),
+        incompleteAdapter = TaskAdapter(
+            taskViewModel.tasks.value?.toMutableList() ?: mutableListOf(),
+            onDeleteClick = { task ->
+                Log.d("TaskListFragment", "Delete task: ${task.getLocalizedTitle(language)}")
+                taskViewModel.deleteTask(task)
+            },
+            onEditClick = { task ->
+                Log.d("TaskListFragment", "Edit task: ${task.getLocalizedTitle(language)}")
+                // Navigate to AddEditTaskFragment with task
+                val bundle = Bundle().apply {
+                    putSerializable("task", task)
+                }
+                findNavController().navigate(R.id.addEditTaskFragment, bundle)
+            },
+            onCompleteStatusChanged = { task ->
+                Log.d("TaskListFragment", "Task completion status changed: ${task.getLocalizedTitle(language)} - Completed: ${task.completed}")
+                taskViewModel.updateTask(task)
+            }
+        )
+        completedAdapter = TaskAdapter(
+            taskViewModel.tasks.value?.toMutableList() ?: mutableListOf(),
             onDeleteClick = { task ->
                 Log.d("TaskListFragment", "Delete task: ${task.getLocalizedTitle(language)}")
                 taskViewModel.deleteTask(task)
@@ -72,7 +94,10 @@ class TaskListFragment : Fragment() {
         )
 
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        binding.recyclerView.adapter = adapter
+        binding.recyclerView.adapter = incompleteAdapter
+
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerView.adapter = completedAdapter
 
         // Set up search functionality
         binding.editTextSearch.addTextChangedListener { text ->
@@ -83,8 +108,13 @@ class TaskListFragment : Fragment() {
         // Observe tasks from TaskViewModel
         taskViewModel.tasks.observe(viewLifecycleOwner, Observer { tasks ->
             Log.d("TaskListFragment", "Tasks updated: ${tasks.size} items")
-            adapter.updateTasks(tasks)
-        })
+            var completed = tasks.filter { it.completed }    // This filters completed tasks
+            var incomplete = tasks.filter {!it.completed }
+            incompleteAdapter.updateTasks(completed)
+            completedAdapter.updateTasks(incomplete)
+        }
+
+        )
 
         binding.fabAddTask.setOnClickListener {
             Log.d("TaskListFragment", "Add new task button clicked")
@@ -111,7 +141,21 @@ class TaskListFragment : Fragment() {
                 taskViewModel.deleteTask(task)
             }
         }
-        
+        binding.buttonSwitch?.setOnClickListener {
+            doneTasks = !doneTasks
+
+            val filtered = if (doneTasks) {
+                taskViewModel.tasks.value?.filter { it.completed } ?: emptyList()
+            } else {
+                taskViewModel.tasks.value?.filter { !it.completed } ?: emptyList()
+            }
+
+            incompleteAdapter.updateTasks(filtered)
+            binding.recyclerView.adapter = incompleteAdapter
+
+        }
+
+
         // Add select all button click listener
         binding.buttonSelectAll.setOnClickListener {
             Log.d("TaskListFragment", "Select all tasks clicked")
@@ -127,7 +171,7 @@ class TaskListFragment : Fragment() {
             Log.d("TaskListFragment", "Selecting all $uncompletedTasksCount uncompleted tasks")
             
             // Use adapter's select all function
-            adapter.selectAllTasks()
+            incompleteAdapter.selectAllTasks()
         }
 
         // Load tasks

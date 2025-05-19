@@ -14,7 +14,7 @@
 
     <!-- Task fields -->
     <string name="task_title">Title</string>
-    <string name="task_description">Description</string>
+    <string name="task_description">Description(Optional)</string>
     <string name="task_notes">Notes (optional)</string>
     <string name="task_title_hint">Task title</string>
 
