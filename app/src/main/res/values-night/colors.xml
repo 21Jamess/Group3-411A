@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary (Dark Blue) -->
+    <color name="primary">#1565C0</color> <!-- Deep blue -->
+    <color name="onPrimary">#BBDEFB</color> <!-- Light blue text -->
+    <color name="primaryContainer">#0D47A1</color> <!-- Darker blue container -->
+    <color name="onPrimaryContainer">#E3F2FD</color> <!-- Light text -->
+
+    <!-- Secondary (Grey-Blue) -->
+    <color name="secondary">#42A5F5</color> <!-- Medium blue -->
+    <color name="onSecondary">#003973</color> <!-- Dark blue text -->
+    <color name="secondaryContainer">#004D40</color> <!-- Dark teal/grey -->
+    <color name="onSecondaryContainer">#B2DFDB</color> <!-- Light teal text -->
+
+    <!-- Surface/Background -->
+    <color name="surface">#121212</color> <!-- Dark grey background -->
+    <color name="surface_variant">#2D2D2D</color> <!-- Medium grey -->
+    <color name="onSurface">#E0E0E0</color> <!-- Light text -->
+
+    <!-- Error -->
+    <color name="error">#CF6679</color> <!-- Soft pink-red -->
+    <color name="onError">#000000</color>
+</resources>

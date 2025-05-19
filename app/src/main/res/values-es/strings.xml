@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App name -->
+    <string name="app_name">TaskTrack</string>
+    <string name="add_task">Añadir Tarea</string>
+
+    <!-- Menu & button labels -->
+    <string name="search">Buscar</string>
+    <string name="sort">Ordenar</string>
+    <string name="settings">Ajustes</string>
+    <string name="delete">Eliminar</string>
+    <string name="language">Idioma</string>
+    <string name="choose_language">Elegir Idioma</string>
+
+    <!-- Task fields -->
+    <string name="task_title">Título</string>
+    <string name="task_description">Descripción</string>
+    <string name="task_notes">Notas (opcional)</string>
+    <string name="task_title_hint">Título de la tarea</string>
+
+    <!-- Date/Time -->
+    <string name="select_date">Seleccionar fecha</string>
+    <string name="select_time">Seleccionar hora</string>
+    <string name="pick_date">Elegir Fecha</string>
+    <string name="pick_time">Elegir Hora</string>
+    <string name="no_date_chosen">Sin fecha elegida</string>
+    <string name="no_time_chosen">Sin hora elegida</string>
+
+    <!-- Dialog and form buttons -->
+    <string name="save_task">Guardar Tarea</string>
+    <string name="edit_task">Editar Tarea</string>
+    <string name="save">Guardar</string>
+    <string name="cancel">Cancelar</string>
+
+    <!-- Sort dialog -->
+    <string name="sort_tasks_by">Ordenar Tareas Por</string>
+    <string name="sort_date">Fecha</string>
+    <string name="sort_alphabetical">Alfabético</string>
+    <string name="sort_priority">Prioridad</string>
+
+    <!-- Validation messages -->
+    <string name="title_cannot_be_empty">El título no puede estar vacío</string>
+
+    <!-- Screen titles -->
+    <string name="title_task_list">Lista de Tareas</string>
+    <string name="title_add_edit_task">Añadir/Editar Tarea</string>
+</resources>
