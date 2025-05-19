@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App name -->
+    <string name="app_name">TaskTrack</string>
+    <string name="add_task">Thêm Nhiệm vụ</string>
+
+    <!-- Menu & button labels -->
+    <string name="search">Tìm kiếm</string>
+    <string name="sort">Sắp xếp</string>
+    <string name="settings">Cài đặt</string>
+    <string name="delete">Xóa</string>
+    <string name="language">Ngôn ngữ</string>
+    <string name="choose_language">Chọn Ngôn ngữ</string>
+
+    <!-- Task fields -->
+    <string name="task_title">Tiêu đề</string>
+    <string name="task_description">Mô tả</string>
+    <string name="task_notes">Ghi chú (tùy chọn)</string>
+    <string name="task_title_hint">Tiêu đề nhiệm vụ</string>
+
+    <!-- Date/Time -->
+    <string name="select_date">Chọn ngày</string>
+    <string name="select_time">Chọn giờ</string>
+    <string name="pick_date">Chọn Ngày</string>
+    <string name="pick_time">Chọn Giờ</string>
+    <string name="no_date_chosen">Chưa chọn ngày</string>
+    <string name="no_time_chosen">Chưa chọn giờ</string>
+
+    <!-- Dialog and form buttons -->
+    <string name="save_task">Lưu Nhiệm vụ</string>
+    <string name="edit_task">Sửa Nhiệm vụ</string>
+    <string name="save">Lưu</string>
+    <string name="cancel">Hủy</string>
+
+    <!-- Sort dialog -->
+    <string name="sort_tasks_by">Sắp xếp Theo</string>
+    <string name="sort_date">Ngày</string>
+    <string name="sort_alphabetical">Theo bảng chữ cái</string>
+    <string name="sort_priority">Ưu tiên</string>
+    <string name="select_due_date_time">Ngày &amp; Giờ</string>
+    <string name="pick_date_time">Chọn Ngày &amp; Giờ</string>
+    <string name="skip_time">Bỏ qua giờ</string>
+    <string name="no_due_date_time">Chưa đặt ngày &amp; giờ</string>
+
+    <!-- Validation messages -->
+    <string name="title_cannot_be_empty">Tiêu đề không thể để trống</string>
+
+    <!-- Screen titles -->
+    <string name="title_task_list">Danh sách Nhiệm vụ</string>
+    <string name="title_add_edit_task">Thêm/Sửa Nhiệm vụ</string>
+</resources>
