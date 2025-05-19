@@ -11,6 +11,9 @@
     <string name="delete">Xóa</string>
     <string name="language">Ngôn ngữ</string>
     <string name="choose_language">Chọn Ngôn ngữ</string>
+    <string name="search_tasks">Tìm kiếm nhiệm vụ</string>
+    <string name="select_all">Chọn Tất cả</string>
+    <string name="delete_completed_tasks">Xóa Nhiệm vụ Đã Hoàn thành</string>
 
     <!-- Task fields -->
     <string name="task_title">Tiêu đề</string>

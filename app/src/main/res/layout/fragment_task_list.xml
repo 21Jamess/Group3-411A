@@ -56,7 +56,7 @@
             android:id="@+id/editTextSearch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Search tasks"
+            android:hint="@string/search_tasks"
             android:inputType="text"
             android:imeOptions="actionSearch"/>
     </com.google.android.material.textfield.TextInputLayout>
@@ -76,7 +76,7 @@
             android:id="@+id/buttonSelectAll"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Select All"
+            android:text="@string/select_all"
             android:layout_marginEnd="8dp"
             android:drawablePadding="8dp" />
 
@@ -84,7 +84,7 @@
             android:id="@+id/buttonDeleteCompleted"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Delete Completed Tasks"
+            android:text="@string/delete_completed_tasks"
             android:drawableStart="@drawable/ic_delete_24"
             android:drawablePadding="8dp" />
     </LinearLayout>
