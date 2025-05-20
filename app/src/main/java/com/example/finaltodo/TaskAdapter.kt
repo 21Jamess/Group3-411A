@@ -5,16 +5,15 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import java.text.SimpleDateFormat
-import java.util.Locale
 import java.util.Date
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 class TaskAdapter(
-    private var tasks: List<Task>,
+    private var tasks: MutableList<Task>,
     private val onDeleteClick: (Task) -> Unit,
     private val onEditClick: (Task) -> Unit,
     private val onCompleteStatusChanged: (Task) -> Unit
@@ -104,7 +103,8 @@ class TaskAdapter(
     }
 
     fun updateTasks(newTasks: List<Task>) {
-        tasks = newTasks
+        tasks.clear()
+        tasks.addAll(newTasks)
         notifyDataSetChanged()
     }
 
